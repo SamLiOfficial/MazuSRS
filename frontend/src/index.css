@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+  font-family: 'Helvetica Neue', Arial, sans-serif;  /* Helvetica Neue as primary font */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #ADD8E6;  /* Light gray background */
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  monospace;
+}
