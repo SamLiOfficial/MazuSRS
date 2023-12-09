@@ -12,6 +12,10 @@ const ItemForm = () => {
     });
 
     const [response, setResponse] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [validationErrors, setValidationErrors] = useState({});
+
+
 
     // Styling for the form and components
     const formContainerStyle = {
@@ -47,6 +51,22 @@ const ItemForm = () => {
         border: '1px solid #ccc', // Light gray border
     };
 
+    // Add style for invalid input
+    const invalidInputStyle = {
+        ...inputStyle,
+        border: '1px solid red', // Red border for invalid input
+        animation: 'flashRed 0.5s' // Flash animation for invalid input
+    };
+
+    // Add style for warning message
+    const warningMessageStyle = {
+        color: 'red',
+        textAlign: 'center',
+        visibility: Object.keys(validationErrors).length ? 'visible' : 'hidden', // Only visible when there are errors
+        marginBottom: '10px'
+    };
+
+
     const textAreaStyle = {
         ...inputStyle,
         height: '100px',
@@ -66,29 +86,117 @@ const ItemForm = () => {
         marginLeft: '20px', // Move the button to the right
         marginTop: '20px', // Margin top for spacing
     };
+    const Modal = ({ onClose, message }) => (
+        <>
+            {/* Overlay */}
+            <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                zIndex: 1
+            }}></div>
+
+            {/* Modal */}
+            <div style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                backgroundColor: '#ADD8E6',
+                padding: '20px',
+                borderRadius: '10px',
+                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
+                zIndex: 2,
+                animation: 'fadeIn 0.5s'
+            }}>
+                <p style={{ color: '#00008B', textAlign: 'center', fontWeight: 'bold' }}>
+                    <span style={{ marginRight: '10px' }}>️</span>
+                    {message}
+                </p>
+                <button onClick={onClose} style={{
+                    backgroundColor: '#00008B',
+                    color: '#fff',
+                    padding: '12px 0',
+                    borderRadius: '5px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    marginTop: '15px',
+                    width: '60%', // Wider button
+                    display: 'block',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    outline: 'none'
+                }}
+                        onMouseDown={(e) => e.target.style.transform = 'scale(0.95)'}
+                        onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
+                        onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                >
+                    Close
+                </button>
+            </div>
+        </>
+    );
+
+// Add this to your CSS
+    /*
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+        to { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
+    }
+    */
+
+
     const handleChange = (e) => {
         setItem({
             ...item,
             [e.target.name]: e.target.value
         });
+        // Reset validation error for the changed field
+        setValidationErrors({
+            ...validationErrors,
+            [e.target.name]: false
+        });
     };
-
     const saveItem = async () => {
+        // Check for empty fields
+        const newValidationErrors = {};
+        Object.keys(item).forEach(key => {
+            if (item[key] === '' && key !== 'note') { // Exclude 'note' field from validation
+                newValidationErrors[key] = true;
+            }
+        });
+
+        if (Object.keys(newValidationErrors).length) {
+            setValidationErrors(newValidationErrors);
+            return; // Do not proceed if there are validation errors
+        }
         try {
             const res = await axios.post('http://localhost:8080/item', item);
-            setResponse(res.data);
+            // Check the response and set the message accordingly
+            const message = res.data.startsWith("Item and initial")
+                ? "Item saved successfully!"
+                : "Item already exist in database";
+            setResponse(message);
+            setShowModal(true); // Show the modal with the appropriate message
         } catch (error) {
             console.error("Error saving item:", error);
+            // Handle error case (optional)
         }
     };
 
     return (
         <div style={formContainerStyle}>
+
+            <div style={{ ...warningMessageStyle }}>所有字段必须填写</div> {/* Warning message */}
+
             <div style={formStyle}>
                 {/* 类别 */}
                 <label style={labelStyle}>类别</label>
                 <input
-                    style={inputStyle}
+                    style={validationErrors.itemType ? invalidInputStyle : inputStyle}
                     name="itemType"
                     placeholder="输入类别"
                     value={item.itemType}
@@ -148,7 +256,11 @@ const ItemForm = () => {
             {/* Save Button */}
             <button style={buttonStyle} onClick={saveItem}>保存新建货品</button>
 
-            <p>{response}</p>
+
+            {/* Modal */}
+            {showModal && <Modal onClose={() => setShowModal(false)} message={response} />}
+
+
         </div>
     );
 };

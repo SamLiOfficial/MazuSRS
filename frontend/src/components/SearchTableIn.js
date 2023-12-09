@@ -7,7 +7,7 @@ const SearchTableIn = ({ items }) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        backgroundColor: '#ffffff',  // White background
+        backgroundColor: '#d4ebf2',  // Light blue background
         padding: '20px',
         borderRadius: '10px',
         width: '530px',  // Fixed width set to 530px
@@ -19,32 +19,33 @@ const SearchTableIn = ({ items }) => {
         marginBottom: '20px',
         fontSize: '24px',
         fontWeight: 'bold',
-        color: '#00008B', // Black color
+        color: '#00008B', // Deep blue color
     };
 
     // Styling for the table
     const tableStyle = {
         width: '470px',  // Fixed width set to 470px
         borderCollapse: 'collapse',
-        backgroundColor: '#ffffff', // White background
-        borderRadius: '10px',
+        backgroundColor: '#d4ebf2', // Light blue background
+        borderRadius: '0px',
         overflow: "hidden", // Prevent overflow
     };
 
     // Styling for table header cells (th)
     const thStyle = {
         padding: '10px',
-        border: '1px solid #00008B', // Black border
-        backgroundColor: '#00008B', // Black background
-        color: '#ffffff', // White color
+        border: '1px solid #00008B', // Deep blue border
+        backgroundColor: '#00008B', // Deep blue background
+        color: '#ffffff', // White text color
+
     };
 
     // Styling for table data cells (td)
     const tdStyle = {
         padding: '10px',
-        border: '1px solid #00008B', // Black border
+        border: '1px solid #00008B', // Deep blue border
         textAlign: 'center',
-        color: '#00008B', // Black color
+        color: '#00008B', // Deep blue text color
     };
 
     // Styling for wide columns in the table

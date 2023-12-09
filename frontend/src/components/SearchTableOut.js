@@ -2,19 +2,19 @@ import React from 'react';
 import StockOutForm from "./StockOutForm"; // Import StockOutForm component
 
 const SearchTableOut = ({ items }) => {
-    // Styling for the container, similar to SearchTableIn
+    // Styling for the container
     const divStyle = {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        backgroundColor: '#ffffff',  // White background
+        backgroundColor: '#d4ebf2',  // Light blue background
         padding: '20px',
         borderRadius: '10px',
         width: '530px',  // Fixed width set to 530px
         overflow: "hidden", // Prevent overflow
     };
 
-    // Styling for the title, similar to SearchTableIn
+    // Styling for the title
     const titleStyle = {
         marginBottom: '20px',
         fontSize: '24px',
@@ -22,24 +22,23 @@ const SearchTableOut = ({ items }) => {
         color: '#00008B', // Dark blue color
     };
 
-    // Styling for the table, similar to SearchTableIn
+    // Styling for the table
     const tableStyle = {
         width: '470px',  // Fixed width set to 470px
         borderCollapse: 'collapse',
-        backgroundColor: '#ffffff', // White background
-        borderRadius: '10px',
+        backgroundColor: '#d4ebf2', // Light blue background
         overflow: "hidden", // Prevent overflow
     };
 
-    // Styling for table header cells (th), similar to SearchTableIn
+    // Styling for table header cells (th)
     const thStyle = {
         padding: '10px',
         border: '1px solid #00008B', // Dark blue border
         backgroundColor: '#00008B', // Dark blue background
-        color: '#ffffff', // White color
+        color: '#ffffff', // White color for text
     };
 
-    // Styling for table data cells (td), similar to SearchTableIn
+    // Styling for table data cells (td)
     const tdStyle = {
         padding: '10px',
         border: '1px solid #00008B', // Dark blue border
@@ -47,19 +46,19 @@ const SearchTableOut = ({ items }) => {
         color: '#00008B', // Dark blue color
     };
 
-    // Styling for wide columns in the table, similar to SearchTableIn
+    // Styling for wide columns in the table
     const wideColumn = {
         width: '200px', // Width as wide as 40 characters approximately
     };
 
-    // Styling for the note column, which is wider, similar to SearchTableIn
+    // Styling for the note column, which is wider
     const noteColumn = {
         width: '600px', // 3 times wider than other columns
     };
 
     return (
         <div style={divStyle}>
-            <div style={titleStyle}>Search Results</div> {/* Centered title, similar to SearchTableIn */}
+            <div style={titleStyle}>Search Results</div>
             {items.length === 0 ? (
                 <p>No results found</p>
             ) : (
