@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+// Define a React functional component called StockOutForm that takes props: item and currentStock
 const StockOutForm = ({ item, currentStock }) => {
+    // Define state variables and initialize them with default values
     const [stockOutAmount, setStockOutAmount] = useState("");
     const [currencyUnit, setCurrencyUnit] = useState("CAD");
     const [note, setNote] = useState("");
     const [sellPrice, setSellPrice] = useState("");
     const [error, setError] = useState("");
 
+    // Define CSS styles for various elements
     const inputStyle = {
         width: '200px',
         padding: '10px',
@@ -46,16 +49,20 @@ const StockOutForm = ({ item, currentStock }) => {
         margin: '10px 0',
     };
 
+    // Define a function to save the record
     const saveRecord = async () => {
+        // Check if stockOutAmount and sellPrice are valid numbers
         if (!Number.isInteger(Number(stockOutAmount)) || isNaN(Number(sellPrice))) {
             setError("Invalid Input");
             return;
         }
+        // Check if stockOutAmount exceeds currentStock
         if (Number(stockOutAmount) > currentStock) {
             setError("Stock out amount exceeds current stock");
             return;
         }
 
+        // Create a record object with item details and user inputs
         const record = {
             itemId: item.itemId,
             itemName: item.itemName,
@@ -69,6 +76,7 @@ const StockOutForm = ({ item, currentStock }) => {
         };
 
         try {
+            // Send a POST request to save the record to a server
             const res = await axios.post('http://localhost:8080/stock-out-record', record);
             setError(`Stock-out record saved! Attributes: ${JSON.stringify(res.data)}`);
         } catch (error) {
@@ -76,6 +84,7 @@ const StockOutForm = ({ item, currentStock }) => {
         }
     };
 
+    // Render the component with input fields, select dropdown, button, and error message
     return (
         <div>
             <div style={rowContainerStyle}>

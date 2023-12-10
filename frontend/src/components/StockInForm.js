@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react';  // Import necessary modules
 import axios from 'axios';
 
 const StockInForm = ({ item }) => {
     // State variables to store form input values and response message
-    const [stockInAmount, setStockInAmount] = useState("");
-    const [unitPrice, setUnitPrice] = useState("");
-    const [currencyUnit, setCurrencyUnit] = useState("CAD");
-    const [note, setNote] = useState("");
+    const [stockInAmount, setStockInAmount] = useState("");  // Initialize stockInAmount as an empty string
+    const [unitPrice, setUnitPrice] = useState("");  // Initialize unitPrice as an empty string
+    const [currencyUnit, setCurrencyUnit] = useState("CAD");  // Initialize currencyUnit as "CAD"
+    const [note, setNote] = useState("");  // Initialize note as an empty string
     const [responseMessage, setResponseMessage] = useState("");  // State to hold the response
 
     // Styling for form elements
@@ -53,7 +53,7 @@ const StockInForm = ({ item }) => {
     const saveRecord = async () => {
         // Check for valid input
         if (!Number.isInteger(Number(stockInAmount)) || isNaN(Number(unitPrice))) {
-            setResponseMessage("Invalid Input");  // Update the response message
+            setResponseMessage("Invalid Input");  // Update the response message if input is invalid
             return;
         }
 
@@ -117,7 +117,6 @@ const StockInForm = ({ item }) => {
             {/* Submit button */}
             <button style={buttonStyle} onClick={saveRecord}>Submit</button>
             {/* Display the response message here */}
-
         </div>
     );
 };

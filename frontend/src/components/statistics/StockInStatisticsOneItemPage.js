@@ -7,14 +7,14 @@ import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker CSS
 // Define the 'StockInStatisticsOneItemPage' functional component
 const StockInStatisticsOneItemPage = () => {
     // Initialize state variables using 'useState'
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
-    const [items, setItems] = useState([]);
-    const [inputValue, setInputValue] = useState('');
-    const [suggestions, setSuggestions] = useState([]);
-    const [selectedItemId, setSelectedItemId] = useState('');
-    const [summarizedData, setSummarizedData] = useState(null);
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [startDate, setStartDate] = useState(new Date()); // Initialize start date state
+    const [endDate, setEndDate] = useState(new Date()); // Initialize end date state
+    const [items, setItems] = useState([]); // Initialize items state
+    const [inputValue, setInputValue] = useState(''); // Initialize input value state
+    const [suggestions, setSuggestions] = useState([]); // Initialize suggestions state
+    const [selectedItemId, setSelectedItemId] = useState(''); // Initialize selected item state
+    const [summarizedData, setSummarizedData] = useState(null); // Initialize summarized data state
+    const [showDropdown, setShowDropdown] = useState(false); // Initialize dropdown visibility state
 
     // Use 'useEffect' to fetch items data when the component is mounted
     useEffect(() => {

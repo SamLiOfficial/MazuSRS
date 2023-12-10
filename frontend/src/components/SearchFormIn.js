@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus } from 'react-icons/fa';  // Import the "+" icon
 import { Link } from 'react-router-dom';  // Import Link component
-import SearchTableIn from './SearchTableIn'; // Make sure you have this component available
+import SearchTableIn from './SearchTableIn';
 
 const SearchForm = () => {
     // State for search criteria and results

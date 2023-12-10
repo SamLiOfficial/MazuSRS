@@ -29,7 +29,7 @@ const ItemForm = () => {
     return (
         <div>
             <h2>Enter Item Details</h2>
-            {/* Your form here */}
+
         </div>
     );
 };

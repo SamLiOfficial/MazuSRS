@@ -1,39 +1,41 @@
-import React from 'react';
+import React from 'react'; // Import the React library
+
+// Import the 'StockInForm' component from the specified path
 import StockInForm from './StockInForm'; // Import StockInForm component
 
-const SearchTableIn = ({ items }) => {
+const SearchTableIn = ({ items }) => { // Define a functional component named 'SearchTableIn' that takes 'items' as a prop
     // Styling for the container
     const divStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        display: 'flex', // Set the display property to 'flex' for layout
+        flexDirection: 'column', // Arrange elements in a column
+        alignItems: 'center', // Center align elements horizontally
         backgroundColor: '#d4ebf2',  // Light blue background
-        padding: '20px',
-        borderRadius: '10px',
+        padding: '20px', // Apply padding of 20px on all sides
+        borderRadius: '10px', // Add rounded corners with 10px radius
         width: '530px',  // Fixed width set to 530px
         overflow: "hidden", // Prevent overflow
     };
 
     // Styling for the title
     const titleStyle = {
-        marginBottom: '20px',
-        fontSize: '24px',
-        fontWeight: 'bold',
+        marginBottom: '20px', // Add bottom margin to create space
+        fontSize: '24px', // Set font size to 24px
+        fontWeight: 'bold', // Apply bold font weight
         color: '#00008B', // Deep blue color
     };
 
     // Styling for the table
     const tableStyle = {
         width: '470px',  // Fixed width set to 470px
-        borderCollapse: 'collapse',
+        borderCollapse: 'collapse', // Collapse table borders
         backgroundColor: '#d4ebf2', // Light blue background
-        borderRadius: '0px',
+        borderRadius: '0px', // No rounded corners
         overflow: "hidden", // Prevent overflow
     };
 
     // Styling for table header cells (th)
     const thStyle = {
-        padding: '10px',
+        padding: '10px', // Apply padding to table header cells
         border: '1px solid #00008B', // Deep blue border
         backgroundColor: '#00008B', // Deep blue background
         color: '#ffffff', // White text color
@@ -42,9 +44,9 @@ const SearchTableIn = ({ items }) => {
 
     // Styling for table data cells (td)
     const tdStyle = {
-        padding: '10px',
+        padding: '10px', // Apply padding to table data cells
         border: '1px solid #00008B', // Deep blue border
-        textAlign: 'center',
+        textAlign: 'center', // Center align text in cells
         color: '#00008B', // Deep blue text color
     };
 
@@ -59,15 +61,16 @@ const SearchTableIn = ({ items }) => {
     };
 
     return (
-        <div style={divStyle}>
+        <div style={divStyle}> {/* Render a div with the container style */}
+            {/* Title for the page */}
             <div style={titleStyle}>Search Results</div> {/* Centered title */}
-            {items.length === 0 ? (
+            {items.length === 0 ? ( // Conditional rendering: If no items, display a message
                 <p>No results found</p>
             ) : (
-                <table style={tableStyle}>
-                    <thead>
-                    <tr>
-                        <th style={{ ...thStyle, ...wideColumn }}>Item ID</th>
+                <table style={tableStyle}> {/* Render a table with the table style */}
+                    <thead> {/* Table header */}
+                    <tr> {/* Table row for header */}
+                        <th style={{ ...thStyle, ...wideColumn }}>Item ID</th> {/* Table header cells */}
                         <th style={{ ...thStyle, ...wideColumn }}>Item Type</th>
                         <th style={{ ...thStyle, ...wideColumn }}>Item Name</th>
                         <th style={{ ...thStyle, ...wideColumn }}>Brand</th>
@@ -76,10 +79,10 @@ const SearchTableIn = ({ items }) => {
                         <th style={{ ...thStyle, ...noteColumn }}>Note</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    {items.map((item, index) => (
-                        <tr key={index}>
-                            <td style={{ ...tdStyle, ...wideColumn }}>{item.itemId}</td>
+                    <tbody> {/* Table body */}
+                    {items.map((item, index) => ( // Map items to table rows
+                        <tr key={index}> {/* Table row with a unique key */}
+                            <td style={{ ...tdStyle, ...wideColumn }}>{item.itemId}</td> {/* Table data cells */}
                             <td style={{ ...tdStyle, ...wideColumn }}>{item.itemType}</td>
                             <td style={{ ...tdStyle, ...wideColumn }}>{item.itemName}</td>
                             <td style={{ ...tdStyle, ...wideColumn }}>{item.brand}</td>
@@ -97,4 +100,4 @@ const SearchTableIn = ({ items }) => {
     );
 };
 
-export default SearchTableIn;
+export default SearchTableIn; // Export the 'SearchTableIn' component
