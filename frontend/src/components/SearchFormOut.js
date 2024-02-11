@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaPlus } from 'react-icons/fa';  // Import the "+" icon
 import { Link } from 'react-router-dom';  // Import Link component
 import SearchTableOut from './SearchTableOut';
-import SearchTableIn from "./SearchTableIn"; // Update this path as needed
+
 
 const SearchForm = () => {
     // State for search criteria and results
@@ -172,7 +172,7 @@ const SearchForm = () => {
         <div>
             {/* New Item Button */}
             <div style={newItemButtonContainerStyle}>
-                <Link to="/new-item-out" style={{ ...newItemButtonStyle, backgroundColor: '#00008B', textDecoration: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Link to="/new-item" style={{ ...newItemButtonStyle, backgroundColor: '#00008B', textDecoration: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <div style={{ backgroundColor: '#d4ebf2', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <FaPlus color="#00008B" />  {/* Updated color for the '+' icon */}
                     </div>

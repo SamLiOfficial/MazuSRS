@@ -1,23 +1,30 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+// Importing necessary modules and components
+import React, { useState } from 'react'; // Import React and useState hook from React library
+import axios from 'axios'; // Import axios for making HTTP requests
+import Modal from './popUps/Modal'; // Import the Modal component from a local file
 
+// Define the ItemForm functional component
 const ItemForm = () => {
+    // State hooks for managing form data
     const [item, setItem] = useState({
-        itemType: '',
-        itemName: '',
-        brand: '',
-        itemSize: '',
-        unit: '',
-        note: ''
+        itemType: '', // State for item type
+        itemName: '', // State for item name
+        brand: '', // State for brand
+        itemSize: '', // State for item size
+        unit: '', // State for unit
+        note: '' // State for additional notes
     });
 
+    // State hook for response message from server
     const [response, setResponse] = useState('');
+
+    // State hook for modal visibility control
     const [showModal, setShowModal] = useState(false);
+
+    // State hook for managing form validation errors
     const [validationErrors, setValidationErrors] = useState({});
 
-
-
-    // Styling for the form and components
+    // CSS styles for the form container
     const formContainerStyle = {
         display: 'flex',
         flexDirection: 'column',
@@ -27,6 +34,7 @@ const ItemForm = () => {
         borderRadius: '10px',
     };
 
+    // CSS styles for the form layout
     const formStyle = {
         display: 'grid',
         gridTemplateColumns: '160px 300px', // Two columns layout
@@ -35,6 +43,7 @@ const ItemForm = () => {
         gridTemplateRows: 'repeat(5, auto) 1fr', // Define rows with 1fr for the textarea row
     };
 
+    // CSS styles for labels
     const labelStyle = {
         fontWeight: 'bold',
         color: '#fff',
@@ -44,6 +53,7 @@ const ItemForm = () => {
         textAlign: 'left',
     };
 
+    // CSS styles for input fields
     const inputStyle = {
         width: '100%',
         padding: '8px',
@@ -51,14 +61,14 @@ const ItemForm = () => {
         border: '1px solid #ccc', // Light gray border
     };
 
-    // Add style for invalid input
+    // CSS styles for invalid input fields
     const invalidInputStyle = {
         ...inputStyle,
         border: '1px solid red', // Red border for invalid input
         animation: 'flashRed 0.5s' // Flash animation for invalid input
     };
 
-    // Add style for warning message
+    // CSS styles for warning messages
     const warningMessageStyle = {
         color: 'red',
         textAlign: 'center',
@@ -66,7 +76,7 @@ const ItemForm = () => {
         marginBottom: '10px'
     };
 
-
+    // CSS styles for the textarea
     const textAreaStyle = {
         ...inputStyle,
         height: '100px',
@@ -74,6 +84,7 @@ const ItemForm = () => {
         gridColumn: '1 / -1', // Span across all columns
     };
 
+    // CSS styles for the save button
     const buttonStyle = {
         backgroundColor: '#00008B', // Dark blue background
         color: '#fff',
@@ -86,73 +97,12 @@ const ItemForm = () => {
         marginLeft: '20px', // Move the button to the right
         marginTop: '20px', // Margin top for spacing
     };
-    const Modal = ({ onClose, message }) => (
-        <>
-            {/* Overlay */}
-            <div style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                zIndex: 1
-            }}></div>
 
-            {/* Modal */}
-            <div style={{
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                backgroundColor: '#ADD8E6',
-                padding: '20px',
-                borderRadius: '10px',
-                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
-                zIndex: 2,
-                animation: 'fadeIn 0.5s'
-            }}>
-                <p style={{ color: '#00008B', textAlign: 'center', fontWeight: 'bold' }}>
-                    <span style={{ marginRight: '10px' }}>️</span>
-                    {message}
-                </p>
-                <button onClick={onClose} style={{
-                    backgroundColor: '#00008B',
-                    color: '#fff',
-                    padding: '12px 0',
-                    borderRadius: '5px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    marginTop: '15px',
-                    width: '60%', // Wider button
-                    display: 'block',
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                    outline: 'none'
-                }}
-                        onMouseDown={(e) => e.target.style.transform = 'scale(0.95)'}
-                        onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
-                        onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-                >
-                    Close
-                </button>
-            </div>
-        </>
-    );
-
-// Add this to your CSS
-    /*
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-        to { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
-    }
-    */
-
-
+    // Function to handle changes in input fields
     const handleChange = (e) => {
         setItem({
             ...item,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value // Update state for the changed field
         });
         // Reset validation error for the changed field
         setValidationErrors({
@@ -160,8 +110,10 @@ const ItemForm = () => {
             [e.target.name]: false
         });
     };
+
+    // Function to handle item data submission
     const saveItem = async () => {
-        // Check for empty fields
+        // Validate fields and generate errors for empty ones
         const newValidationErrors = {};
         Object.keys(item).forEach(key => {
             if (item[key] === '' && key !== 'note') { // Exclude 'note' field from validation
@@ -169,31 +121,35 @@ const ItemForm = () => {
             }
         });
 
+        // Halt submission if there are validation errors
         if (Object.keys(newValidationErrors).length) {
             setValidationErrors(newValidationErrors);
-            return; // Do not proceed if there are validation errors
+            return; // Exit the function early
         }
+
         try {
+            // Attempt to send a POST request to save the item
             const res = await axios.post('http://localhost:8080/item', item);
-            // Check the response and set the message accordingly
+            // Determine response message based on server response
             const message = res.data.startsWith("Item and initial")
-                ? "Item saved successfully!"
-                : "Item already exist in database";
-            setResponse(message);
-            setShowModal(true); // Show the modal with the appropriate message
+                ? "货品保存成功!"
+                : "货品已存在，无法保存!";
+            setResponse(message); // Set the response message state
+            setShowModal(true); // Display the modal with the response message
         } catch (error) {
-            console.error("Error saving item:", error);
-            // Handle error case (optional)
+            console.error("错误:", error);
+            // Optional error handling can be implemented here
         }
     };
 
+    // JSX for rendering the component
     return (
         <div style={formContainerStyle}>
-
-            <div style={{ ...warningMessageStyle }}>所有字段必须填写</div> {/* Warning message */}
+            {/* Warning message for validation errors */}
+            <div style={{ ...warningMessageStyle }}>所有字段必须填写</div>
 
             <div style={formStyle}>
-                {/* 类别 */}
+                {/* Input field for item type with label */}
                 <label style={labelStyle}>类别</label>
                 <input
                     style={validationErrors.itemType ? invalidInputStyle : inputStyle}
@@ -203,7 +159,7 @@ const ItemForm = () => {
                     onChange={handleChange}
                 />
 
-                {/* 名称 */}
+                {/* Input field for item name with label */}
                 <label style={labelStyle}>名称</label>
                 <input
                     style={inputStyle}
@@ -213,7 +169,7 @@ const ItemForm = () => {
                     onChange={handleChange}
                 />
 
-                {/* 品牌 */}
+                {/* Input field for brand with label */}
                 <label style={labelStyle}>品牌</label>
                 <input
                     style={inputStyle}
@@ -223,7 +179,7 @@ const ItemForm = () => {
                     onChange={handleChange}
                 />
 
-                {/* 规格 */}
+                {/* Input field for item size with label */}
                 <label style={labelStyle}>规格</label>
                 <input
                     style={inputStyle}
@@ -233,7 +189,7 @@ const ItemForm = () => {
                     onChange={handleChange}
                 />
 
-                {/* 单位 */}
+                {/* Input field for unit with label */}
                 <label style={labelStyle}>单位</label>
                 <input
                     style={inputStyle}
@@ -243,7 +199,7 @@ const ItemForm = () => {
                     onChange={handleChange}
                 />
 
-                {/* 备注 */}
+                {/* Textarea for additional notes */}
                 <textarea
                     style={textAreaStyle}
                     name="note"
@@ -253,16 +209,14 @@ const ItemForm = () => {
                 ></textarea>
             </div>
 
-            {/* Save Button */}
+            {/* Save button */}
             <button style={buttonStyle} onClick={saveItem}>保存新建货品</button>
 
-
-            {/* Modal */}
+            {/* Modal component that shows up based on the showModal state */}
             {showModal && <Modal onClose={() => setShowModal(false)} message={response} />}
-
-
         </div>
     );
 };
 
+// Export the ItemForm component for use in other files
 export default ItemForm;

@@ -1,68 +1,86 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Modal from './popUps/Modal';
 
-// Define a React functional component called StockOutForm that takes props: item and currentStock
 const StockOutForm = ({ item, currentStock }) => {
-    // Define state variables and initialize them with default values
     const [stockOutAmount, setStockOutAmount] = useState("");
     const [currencyUnit, setCurrencyUnit] = useState("CAD");
     const [note, setNote] = useState("");
     const [sellPrice, setSellPrice] = useState("");
-    const [error, setError] = useState("");
+    const [responseMessage, setResponseMessage] = useState("");
+    const [showModal, setShowModal] = useState(false);
 
-    // Define CSS styles for various elements
+    const labelStyle = {
+        backgroundColor: '#00008B',
+        color: '#fff',
+        padding: '5px 10px',
+        borderRadius: '5px',
+        marginBottom: '5px',
+        width: '100px',
+        display: 'inline-block',
+        marginRight: '10px',
+        textAlign: 'left',
+        height: '25px',
+    };
+
     const inputStyle = {
         width: '200px',
+        height: '10px',
         padding: '10px',
-        margin: '10px',
+        margin: '10px 0',
         borderRadius: '5px',
         border: '3px solid #00008B',
         backgroundColor: '#fff',
-        color: '#000'
+        color: '#000',
     };
 
     const selectStyle = {
         width: '226px',
-        padding: '10px',
-        margin: '10px',
+        height: '37px',
+        padding: '8px',
+        margin: '10px 0',
         borderRadius: '5px',
         border: '3px solid #00008B',
         backgroundColor: '#fff',
-        color: '#000'
+        color: '#000',
     };
 
     const buttonStyle = {
-        margin: '10px',
+        margin: '10px 0',
         padding: '10px',
         width: '100px',
         backgroundColor: '#00008B',
         color: 'white',
         borderRadius: '5px',
         cursor: 'pointer',
-        transition: '0.2s'
+        transition: '0.2s',
     };
 
     const rowContainerStyle = {
-        display: 'flex',
-        justifyContent: 'space-between',
+        flexDirection: 'row',
         alignItems: 'center',
         margin: '10px 0',
     };
 
-    // Define a function to save the record
     const saveRecord = async () => {
-        // Check if stockOutAmount and sellPrice are valid numbers
-        if (!Number.isInteger(Number(stockOutAmount)) || isNaN(Number(sellPrice))) {
-            setError("Invalid Input");
-            return;
-        }
-        // Check if stockOutAmount exceeds currentStock
-        if (Number(stockOutAmount) > currentStock) {
-            setError("Stock out amount exceeds current stock");
+        if (!Number.isInteger(Number(stockOutAmount))) {
+            setResponseMessage("出库数量必须是整数");
+            setShowModal(true);
             return;
         }
 
-        // Create a record object with item details and user inputs
+        if (isNaN(Number(sellPrice))) {
+            setResponseMessage("售价必须是数字");
+            setShowModal(true);
+            return;
+        }
+
+        if (Number(stockOutAmount) > currentStock) {
+            setResponseMessage("Error: Stock out amount exceeds current stock");
+            setShowModal(true);
+            return;
+        }
+
         const record = {
             itemId: item.itemId,
             itemName: item.itemName,
@@ -76,48 +94,65 @@ const StockOutForm = ({ item, currentStock }) => {
         };
 
         try {
-            // Send a POST request to save the record to a server
             const res = await axios.post('http://localhost:8080/stock-out-record', record);
-            setError(`Stock-out record saved! Attributes: ${JSON.stringify(res.data)}`);
+            if (res.data.startsWith("Stock-out record saved! Attributes:")) {
+                setResponseMessage("记录保存成功!");
+            } else {
+                setResponseMessage("库存不足，无法出库!");
+            }
+            setShowModal(true);
         } catch (error) {
             console.error("Error saving record:", error);
+            setResponseMessage("运算出错，请联系工作人员");
+            setShowModal(true);
         }
     };
 
-    // Render the component with input fields, select dropdown, button, and error message
     return (
-        <div>
+        <div style={{ backgroundColor: '#d4ebf2', padding: '10px' }}>
             <div style={rowContainerStyle}>
+                <label style={labelStyle}>出库数量</label>
                 <input
                     style={inputStyle}
                     type="text"
-                    placeholder="Stock-out amount"
+                    placeholder="出库数量"
                     value={stockOutAmount}
                     onChange={e => setStockOutAmount(e.target.value)}
                 />
+            </div>
+            <div style={rowContainerStyle}>
+                <label style={labelStyle}>价格/{item.unit}</label>
                 <input
                     style={inputStyle}
                     type="text"
-                    placeholder={`Sell Price/${item.unit}`}
+                    placeholder={`价格/${item.unit}`}
                     value={sellPrice}
                     onChange={e => setSellPrice(e.target.value)}
                 />
             </div>
             <div style={rowContainerStyle}>
-                <select style={selectStyle} value={currencyUnit} onChange={e => setCurrencyUnit(e.target.value)}>
+                <label style={labelStyle}>货币单位</label>
+                <select
+                    style={selectStyle}
+                    value={currencyUnit}
+                    onChange={e => setCurrencyUnit(e.target.value)}
+                >
                     <option value="CAD">CAD</option>
                     <option value="CNY">CNY</option>
                 </select>
+            </div>
+            <div style={rowContainerStyle}>
+                <label style={labelStyle}>备注</label>
                 <input
                     style={inputStyle}
                     type="text"
-                    placeholder="Note"
+                    placeholder="备注"
                     value={note}
                     onChange={e => setNote(e.target.value)}
                 />
             </div>
-            <button style={buttonStyle} onClick={saveRecord}>Submit</button>
-            {error && <p>{error}</p>}
+            <button style={buttonStyle} onClick={saveRecord}>确认</button>
+            {showModal && <Modal onClose={() => setShowModal(false)} message={responseMessage} />}
         </div>
     );
 };

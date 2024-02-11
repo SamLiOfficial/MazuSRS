@@ -63,20 +63,20 @@ const SearchTableIn = ({ items }) => { // Define a functional component named 'S
     return (
         <div style={divStyle}> {/* Render a div with the container style */}
             {/* Title for the page */}
-            <div style={titleStyle}>Search Results</div> {/* Centered title */}
+            <div style={titleStyle}>搜索结果</div> {/* Centered title */}
             {items.length === 0 ? ( // Conditional rendering: If no items, display a message
                 <p>No results found</p>
             ) : (
                 <table style={tableStyle}> {/* Render a table with the table style */}
                     <thead> {/* Table header */}
                     <tr> {/* Table row for header */}
-                        <th style={{ ...thStyle, ...wideColumn }}>Item ID</th> {/* Table header cells */}
-                        <th style={{ ...thStyle, ...wideColumn }}>Item Type</th>
-                        <th style={{ ...thStyle, ...wideColumn }}>Item Name</th>
-                        <th style={{ ...thStyle, ...wideColumn }}>Brand</th>
-                        <th style={{ ...thStyle, ...wideColumn }}>Item Size</th>
-                        <th style={{ ...thStyle, ...wideColumn }}>Unit</th>
-                        <th style={{ ...thStyle, ...noteColumn }}>Note</th>
+                        <th style={{ ...thStyle, ...wideColumn }}>货品ID</th> {/* Table header cells */}
+                        <th style={{ ...thStyle, ...wideColumn }}>类别</th>
+                        <th style={{ ...thStyle, ...wideColumn }}>名称</th>
+                        <th style={{ ...thStyle, ...wideColumn }}>品牌</th>
+                        <th style={{ ...thStyle, ...wideColumn }}>规格</th>
+                        <th style={{ ...thStyle, ...wideColumn }}>单位</th>
+                        <th style={{ ...thStyle, ...noteColumn }}>备注</th>
                     </tr>
                     </thead>
                     <tbody> {/* Table body */}

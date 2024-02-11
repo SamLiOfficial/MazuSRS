@@ -1,98 +1,152 @@
-import React, { useState } from 'react'; // Import necessary React modules
+// Import React and useState hook from the 'react' library for component and state management
+import React, { useState } from 'react';
 
-import axios from 'axios'; // Import Axios for making HTTP requests
-import DatePicker from 'react-datepicker'; // Import DatePicker component
-import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker styles
+// Import DatePicker component from 'react-datepicker' library for a date picking interface
+import DatePicker from 'react-datepicker';
 
-const StockInStatistics = () => { // Define a functional React component called StockInStatistics
-    const [startDate, setStartDate] = useState(new Date()); // Initialize state for start date
-    const [endDate, setEndDate] = useState(new Date()); // Initialize state for end date
-    const [summarizedData, setSummarizedData] = useState([]); // Initialize state for summarized data
+// Import default CSS for the DatePicker component for styling
+import 'react-datepicker/dist/react-datepicker.css';
 
-    const handleSummarize = () => { // Define a function to handle data summarization
-        axios.get('http://localhost:8080/summarize-stock-in', { // Send a GET request to summarize data
-            params: {
-                startDate: startDate.toISOString().split('T')[0], // Convert start date to ISO format
-                endDate: endDate.toISOString().split('T')[0], // Convert end date to ISO format
-            }
-        })
-            .then(response => { // Handle successful response
-                setSummarizedData(response.data); // Update state with summarized data
-            })
-            .catch(error => { // Handle errors, if any
-                console.error('Error fetching summary:', error); // Log the error to the console
+// Import axios, a promise-based HTTP client, for making requests to servers
+import axios from 'axios';
+
+// Define the StockInStatistics functional component
+const StockInStatistics = () => {
+    // useState hook to manage startDate state, initialized with the current date
+    const [startDate, setStartDate] = useState(new Date());
+
+    // useState hook to manage endDate state, initialized with the current date
+    const [endDate, setEndDate] = useState(new Date());
+
+    // useState hook to manage the summarizedData state, initialized as an empty array
+    const [summarizedData, setSummarizedData] = useState([]);
+
+    // Async function handleSummarize to fetch data based on selected dates
+    const handleSummarize = async () => {
+        try {
+            // Making a GET request using axios to the specified URL with startDate and endDate as parameters
+            const response = await axios.get('http://localhost:8080/summarize-stock-in', {
+                params: {
+                    startDate: startDate.toISOString().split('T')[0], // Formatting startDate to YYYY-MM-DD
+                    endDate: endDate.toISOString().split('T')[0]     // Formatting endDate to YYYY-MM-DD
+                }
             });
+            setSummarizedData(response.data); // Updating the summarizedData state with the fetched data
+        } catch (error) {
+            // Logging any errors to the console
+            console.error('Error fetching summary:', error);
+        }
     };
 
-    // Common style for DatePicker and Button
-    const inputStyle = {
-        padding: '10px', // Set padding for input elements
-        margin: '5px', // Set margin for input elements
-        borderRadius: '5px', // Apply rounded corners to input elements
-        border: '1px solid #ddd', // Apply a border to input elements
+    // Styling for the DatePicker components
+    const datePickerStyle = {
+        padding: '10px',
+        margin: '10px',
+        borderRadius: '5px',
+        border: '1px solid #ccc',
+        height: '40px'
     };
 
-    // Style for the table
+    // Additional styling for the first DatePicker, extending datePickerStyle
+    const firstDatePickerStyle = {
+        ...datePickerStyle,
+        marginRight: '20px'
+    };
+
+    // Styling for the summarize button
+    const buttonStyle = {
+        ...datePickerStyle,
+        cursor: 'pointer', // Changing cursor to pointer to indicate it's clickable
+        backgroundColor: '#d4ebf2', // Light blue background color
+        color: 'black', // Text color
+        fontWeight: 'bold' // Bold text
+    };
+
+    // Styling for labels (start date and end date)
+    const labelStyle = {
+        color: '#00008B', // Dark blue text color
+        marginRight: '5px', // Right margin for spacing
+        fontWeight: 'bold' // Bold text
+    };
+
+    // Styling for the data table
     const tableStyle = {
-        width: 'calc(100% - 80px)', // Set table width with padding
-        margin: '20px 40px', // Set margin with padding on both sides
-        borderCollapse: 'collapse', // Collapse table borders
-        backgroundColor: '#d4ebf2', // Set background color for the table
-        borderRadius: '10px', // Apply rounded corners to the table
+        width: 'calc(100% - 80px)', // Table width calculation for responsive design
+        margin: '20px 40px', // Margins for spacing
+        borderCollapse: 'collapse', // Collapsing borders for a clean table look
+        backgroundColor: '#d4ebf2', // Light blue background color
+        borderRadius: '10px', // Rounded corners
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' // Box shadow for aesthetics
     };
 
-    // Style for the table headers
-    const headerStyle = {
-        color: '#00008D', // Set text color for headers
-        padding: '10px', // Set padding for headers
-    };
-
-    // Style for the table data cells
+    // Common cell styling for the table
     const cellStyle = {
-        color: 'black', // Set text color for content
-        padding: '10px', // Set padding for cells
+        padding: '10px', // Padding for cell content
+        borderBottom: '1px solid #ddd', // Bottom border for each cell
+        color: 'black' // Text color
     };
 
+    // Header cell styling, extending the common cellStyle
+    const headerStyle = {
+        ...cellStyle, // Inheriting common cell styling
+        backgroundColor: '#00008B', // Dark blue background color for headers
+        color: 'white', // White text color for contrast
+        textAlign: 'left' // Aligning text to the left
+    };
+
+    // JSX to render the component UI
     return (
         <div>
-            <h1>Stock-In Statistics</h1> {/* Render a heading for the page */}
-
-            <div>
-                <DatePicker selected={startDate} onChange={date => setStartDate(date)} style={inputStyle} /> {/* Render DatePicker for start date selection */}
-                <DatePicker selected={endDate} onChange={date => setEndDate(date)} style={inputStyle} /> {/* Render DatePicker for end date selection */}
-                <button onClick={handleSummarize} style={inputStyle}>Summarize</button> {/* Render a button to trigger data summarization */}
+            {/* Display a heading for the Inventory Record Page with styling */}
+            <h1 style={{ textAlign: 'center', color: '#00008B' }}>入库统计</h1>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                {/* Label for start date with styling */}
+                <label style={labelStyle}>开始日期</label>
+                {/* DatePicker for selecting start date with styling */}
+                <DatePicker selected={startDate} onChange={date => setStartDate(date)} style={firstDatePickerStyle} />
+                {/* Spacer div for layout */}
+                <div style={{ width: '20px' }}></div>
+                {/* Label for end date with styling */}
+                <label style={labelStyle}>结束日期</label>
+                {/* DatePicker for selecting end date with styling */}
+                <DatePicker selected={endDate} onChange={date => setEndDate(date)} style={datePickerStyle} />
+                {/* Button to trigger data summarization with styling */}
+                <button onClick={handleSummarize} style={buttonStyle}>确认</button>
             </div>
 
-            {summarizedData.length > 0 && ( // Conditional rendering of the table if data is available
-                <table style={tableStyle}>
-                    <thead>
-                    <tr>
-                        <th style={headerStyle}>Item Name</th> {/* Render table header with the defined headerStyle */}
-                        <th style={headerStyle}>Item Size</th>
-                        <th style={headerStyle}>Unit</th>
-                        <th style={headerStyle}>Item Type</th>
-                        <th style={headerStyle}>Brand</th>
-                        <th style={headerStyle}>Sum Stock In Amount</th>
-                        <th style={headerStyle}>Sum Total Price</th>
+            {/* Table to display the summarized data */}
+            <table style={tableStyle}>
+                <thead>
+                <tr>
+                    {/* Header cells for the table with styling */}
+                    <th style={headerStyle}>货品名称</th>
+                    <th style={headerStyle}>规格</th>
+                    <th style={headerStyle}>单位</th>
+                    <th style={headerStyle}>类别</th>
+                    <th style={headerStyle}>品牌</th>
+                    <th style={headerStyle}>总入库量</th>
+                    <th style={headerStyle}>总价</th>
+                </tr>
+                </thead>
+                <tbody>
+                {/* Mapping each item in the summarizedData to a table row */}
+                {summarizedData.map((item, index) => (
+                    <tr key={index}>
+                        {/* Displaying each property of the item in table cells with styling */}
+                        <td style={cellStyle}>{item.itemName}</td>
+                        <td style={cellStyle}>{item.itemSize}</td>
+                        <td style={cellStyle}>{item.unit}</td>
+                        <td style={cellStyle}>{item.itemType}</td>
+                        <td style={cellStyle}>{item.brand}</td>
+                        <td style={cellStyle}>{item.sumStockInAmount}</td>
+                        <td style={cellStyle}> ${item.sumTotalPrice.toFixed(2)}</td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    {summarizedData.map((item, index) => ( // Map through 'summarizedData' array and render table rows
-                        <tr key={index}>
-                            <td style={cellStyle}>{item.itemName}</td> {/* Render table cell with data from 'summarizedData' */}
-                            <td style={cellStyle}>{item.itemSize}</td>
-                            <td style={cellStyle}>{item.unit}</td>
-                            <td style={cellStyle}>{item.itemType}</td>
-                            <td style={cellStyle}>{item.brand}</td>
-                            <td style={cellStyle}>{item.sumStockInAmount}</td>
-                            <td style={cellStyle}>{item.sumTotalPrice}</td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            )}
+                ))}
+                </tbody>
+            </table>
         </div>
     );
 };
 
-export default StockInStatistics; // Export the StockInStatistics component for use in other parts of the application
+// Exporting the StockInStatistics component for use in other parts of the application
+export default StockInStatistics;

@@ -48,7 +48,7 @@ const InventoryStatsTable = () => { // Define a functional React component calle
         <table style={tableStyle}> {/* Render a table with the defined tableStyle */}
             <thead>
             <tr>
-                <th style={headerStyle}>货品序号</th> {/* Render table header with the defined headerStyle */}
+                <th style={headerStyle}>货品ID</th> {/* Render table header with the defined headerStyle */}
                 <th style={headerStyle}>类别</th>
                 <th style={headerStyle}>名称</th>
                 <th style={headerStyle}>品牌</th>

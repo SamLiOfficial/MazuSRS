@@ -1,13 +1,9 @@
-// src/components/ViewStockOutOneItemPage.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const ViewStockOutOneItemPage = () => {
-    // State variables to manage selected dates, items, input value, suggestions, selected item ID,
-    // related records, and whether to show the dropdown
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [items, setItems] = useState([]);
@@ -18,7 +14,6 @@ const ViewStockOutOneItemPage = () => {
     const [showDropdown, setShowDropdown] = useState(false);
 
     useEffect(() => {
-        // Fetch all items from the server and set them in the 'items' state variable
         axios.get('http://localhost:8080/all-items')
             .then(response => {
                 setItems(response.data.sort((a, b) => a.formattedString.localeCompare(b.formattedString)));
@@ -27,23 +22,20 @@ const ViewStockOutOneItemPage = () => {
     }, []);
 
     const handleInputChange = (e) => {
-        // Handle changes in the input field and update suggestions accordingly
         const value = e.target.value;
         setInputValue(value);
         updateSuggestions(value);
-        setShowDropdown(true); // Show dropdown when user types
+        setShowDropdown(true);
     };
 
     const handleArrowClick = () => {
-        // Toggle the display of the dropdown when the arrow button is clicked
         setShowDropdown(!showDropdown);
         if (!showDropdown) {
-            setSuggestions(items); // Show all items when arrow button is clicked
+            setSuggestions(items);
         }
     };
 
     const updateSuggestions = (value) => {
-        // Filter the items based on the input value and update suggestions
         const filteredSuggestions = items.filter(item =>
             item.formattedString.toLowerCase().includes(value.toLowerCase())
         );
@@ -51,7 +43,6 @@ const ViewStockOutOneItemPage = () => {
     };
 
     const handleSuggestionClick = (itemId, formattedString) => {
-        // Handle item suggestion selection, set the selected item, and clear the suggestions
         setInputValue(formattedString);
         setSelectedItemId(itemId);
         setSuggestions([]);
@@ -59,7 +50,6 @@ const ViewStockOutOneItemPage = () => {
     };
 
     const handleSubmit = () => {
-        // Handle form submission and fetch related records based on selected item and dates
         if (selectedItemId && startDate && endDate) {
             axios.get('http://localhost:8080/stock-out-record-by-item', {
                 params: {
@@ -73,66 +63,123 @@ const ViewStockOutOneItemPage = () => {
                 })
                 .catch(error => console.error('Error fetching related records:', error));
         } else {
-            // Display an alert if the selected dates or item are not valid
             alert('Please select valid dates and an item.');
         }
     };
 
+    // Styling
+    const datePickerStyle = {
+        padding: '10px',
+        margin: '10px',
+        borderRadius: '5px',
+        border: '1px solid #ccc',
+        height: '40px'
+    };
+
+    const firstDatePickerStyle = {
+        ...datePickerStyle,
+        marginRight: '20px'
+    };
+
+    const buttonStyle = {
+        ...datePickerStyle,
+        cursor: 'pointer',
+        backgroundColor: '#d4ebf2',
+        color: 'black',
+        fontWeight: 'bold'
+    };
+
+    const labelStyle = {
+        color: '#00008B',
+        marginRight: '5px',
+        fontWeight: 'bold'
+    };
+
+    const tableStyle = {
+        width: 'calc(100% - 80px)',
+        margin: '20px 40px',
+        borderCollapse: 'collapse',
+        backgroundColor: '#d4ebf2',
+        borderRadius: '10px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+    };
+
+    const cellStyle = {
+        padding: '10px',
+        borderBottom: '1px solid #ddd',
+        color: 'black'
+    };
+
+    const headerStyle = {
+        ...cellStyle,
+        backgroundColor: '#00008B',
+        color: 'white',
+        textAlign: 'left'
+    };
+
     return (
         <div>
-            <h1>View Stock Out Record - One Item</h1>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                <DatePicker selected={startDate} onChange={date => setStartDate(date)} />
-                <DatePicker selected={endDate} onChange={date => setEndDate(date)} />
+            <h1 style={{ textAlign: 'center', color: '#00008B' }}>查询出库记录 - 单个货品</h1>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <label style={labelStyle}>开始日期</label>
+                <DatePicker selected={startDate} onChange={date => setStartDate(date)} style={firstDatePickerStyle} />
+                <div style={{ width: '20px' }}></div>
+                <label style={labelStyle}>结束日期</label>
+                <DatePicker selected={endDate} onChange={date => setEndDate(date)} style={datePickerStyle} />
+                <div style={{ width: '20px' }}></div>
+                <label style={labelStyle}>货品</label>
                 <div style={{ position: 'relative' }}>
-                    <input type="text" value={inputValue} onChange={handleInputChange} placeholder="Search for an item..." />
-                    <button onClick={handleArrowClick}>▼</button>
+                    <input type="text" value={inputValue} onChange={handleInputChange} placeholder="搜索货品..." />
+                    <button onClick={handleArrowClick} >▼</button>
                     {showDropdown && (
                         <div style={{ position: 'absolute', zIndex: 1, backgroundColor: 'white', border: '1px solid #ddd' }}>
                             {suggestions.map(item => (
-                                <div key={item.itemId} onClick={() => handleSuggestionClick(item.itemId, item.formattedString)}>
+                                <div key={item.itemId} onClick={() => handleSuggestionClick(item.itemId, item.formattedString)} style={cellStyle}>
                                     {item.formattedString}
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
-                <button onClick={handleSubmit}>Submit</button>
+                <button onClick={handleSubmit} style={buttonStyle}>确认</button>
             </div>
-            <table>
+
+            <table style={tableStyle}>
                 <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Item ID</th>
-                    <th>Item Name</th>
-                    <th>Brand</th>
-                    <th>Item Size</th>
-                    <th>Unit</th>
-                    <th>Stock Out Amount</th>
-                    <th>Sell Price</th>
-                    <th>Currency Unit</th>
-                    <th>Note</th>
+                    <th style={headerStyle}>日期</th>
+                    <th style={headerStyle}>货品ID</th>
+                    <th style={headerStyle}>名称</th>
+                    <th style={headerStyle}>品牌</th>
+                    <th style={headerStyle}>规格</th>
+                    <th style={headerStyle}>单位</th>
+                    <th style={headerStyle}>出货数量</th>
+                    <th style={headerStyle}>售价</th>
+                    <th style={headerStyle}>货币</th>
+                    <th style={headerStyle}>备注</th>
                 </tr>
                 </thead>
                 <tbody>
                 {relatedRecords.map(record => (
                     <tr key={record.recordId}>
-                        <td>{record.date}</td>
-                        <td>{record.itemId}</td>
-                        <td>{record.itemName}</td>
-                        <td>{record.brand}</td>
-                        <td>{record.itemSize}</td>
-                        <td>{record.unit}</td>
-                        <td>{record.stockOutAmount}</td>
-                        <td>${record.sellPrice.toFixed(2)}</td>
-                        <td>{record.currencyUnit}</td>
-                        <td>{record.note}</td>
+                        <td style={cellStyle}>{record.date}</td>
+                        <td style={cellStyle}>{record.itemId}</td>
+                        <td style={cellStyle}>{record.itemName}</td>
+                        <td style={cellStyle}>{record.brand}</td>
+                        <td style={cellStyle}>{record.itemSize}</td>
+                        <td style={cellStyle}>{record.unit}</td>
+                        <td style={cellStyle}>{record.stockOutAmount}</td>
+                        <td style={cellStyle}>${record.sellPrice.toFixed(2)}</td>
+                        <td style={cellStyle}>{record.currencyUnit}</td>
+                        <td style={cellStyle}>{record.note}</td>
                     </tr>
                 ))}
                 </tbody>
             </table>
+
+
         </div>
     );
 };
 
-export default ViewStockOutOneItemPage; // Export the component as the default export
+export default ViewStockOutOneItemPage;

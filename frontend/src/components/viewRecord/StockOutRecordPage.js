@@ -3,55 +3,104 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 
-// Define a functional component called 'StockOutRecordPage'
 const StockOutRecordPage = () => {
-    // Initialize state variables for 'startDate', 'endDate', and 'records' using 'useState'
-    const [startDate, setStartDate] = useState(new Date()); // 'startDate' stores the selected start date
-    const [endDate, setEndDate] = useState(new Date());     // 'endDate' stores the selected end date
-    const [records, setRecords] = useState([]);             // 'records' stores the fetched stock-out records
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+    const [records, setRecords] = useState([]);
 
-    // Define a function 'handleSubmit' to handle form submission
     const handleSubmit = async () => {
         try {
-            // Make an asynchronous API request to fetch stock-out statistics data
             const response = await axios.get('http://localhost:8080/stock-out-statistics', {
                 params: {
-                    startDate: startDate.toISOString().split('T')[0], // Format 'startDate' for the request
-                    endDate: endDate.toISOString().split('T')[0]       // Format 'endDate' for the request
+                    startDate: startDate.toISOString().split('T')[0],
+                    endDate: endDate.toISOString().split('T')[0]
                 }
             });
-            setRecords(response.data); // Set 'records' state with the fetched data
+            setRecords(response.data);
         } catch (error) {
-            console.error('Error fetching records:', error); // Log an error message if the request fails
+            console.error('Error fetching records:', error);
         }
     };
 
-    // Render the component with JSX
+    // Styling for date picker and submit button
+    const datePickerStyle = {
+        padding: '10px',
+        margin: '10px',
+        borderRadius: '5px',
+        border: '1px solid #ccc',
+        height: '40px'
+    };
+
+    const firstDatePickerStyle = {
+        ...datePickerStyle,
+        marginRight: '20px'
+    };
+
+    const buttonStyle = {
+        ...datePickerStyle,
+        cursor: 'pointer',
+        backgroundColor: '#d4ebf2',
+        color: 'black',
+        fontWeight: 'bold'
+    };
+
+    const labelStyle = {
+        color: '#00008B',
+        marginRight: '5px',
+        fontWeight: 'bold'
+    };
+
+    const tableStyle = {
+        width: 'calc(100% - 80px)',
+        margin: '20px 40px',
+        borderCollapse: 'collapse',
+        backgroundColor: '#d4ebf2',
+        borderRadius: '10px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+    };
+
+    const cellStyle = {
+        padding: '10px',
+        borderBottom: '1px solid #ddd',
+        color: 'black'
+    };
+
+    const headerStyle = {
+        ...cellStyle,
+        backgroundColor: '#00008B',
+        color: 'white',
+        textAlign: 'left'
+    };
+
     return (
         <div>
-            <h1>View Stock-Out Records</h1>
-            <DatePicker selected={startDate} onChange={date => setStartDate(date)} /> {/* Date picker for 'startDate' */}
-            <DatePicker selected={endDate} onChange={date => setEndDate(date)} />     {/* Date picker for 'endDate' */}
-            <button onClick={handleSubmit}>Submit</button> {/* Button to trigger data submission */}
-            <table>
+            <h1 style={{ textAlign: 'center', color: '#00008B' }}>出库记录表</h1>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <label style={labelStyle}>开始日期</label>
+                <DatePicker selected={startDate} onChange={date => setStartDate(date)} style={firstDatePickerStyle} />
+                <div style={{ width: '20px' }}></div>
+                <label style={labelStyle}>结束日期</label>
+                <DatePicker selected={endDate} onChange={date => setEndDate(date)} style={datePickerStyle} />
+                <button onClick={handleSubmit} style={buttonStyle}>确认</button>
+            </div>
+            <table style={tableStyle}>
                 <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Item ID</th>
-                    <th>Item Name</th>
-                    <th>Amount</th>
-                    <th>Sell Price</th>
+                    <th style={headerStyle}>日期</th>
+                    <th style={headerStyle}>货品ID</th>
+                    <th style={headerStyle}>名称</th>
+                    <th style={headerStyle}>数量</th>
+                    <th style={headerStyle}>售价</th>
                 </tr>
                 </thead>
                 <tbody>
                 {records.map(record => (
-                    // Map over 'records' and display each record as a table row
                     <tr key={record.recordId}>
-                        <td>{record.date}</td>
-                        <td>{record.itemId}</td>
-                        <td>{record.itemName}</td>
-                        <td>{record.stockOutAmount}</td>
-                        <td>{record.sellPrice}</td>
+                        <td style={cellStyle}>{record.date}</td>
+                        <td style={cellStyle}>{record.itemId}</td>
+                        <td style={cellStyle}>{record.itemName}</td>
+                        <td style={cellStyle}>{record.stockOutAmount}</td>
+                        <td style={cellStyle}>${record.sellPrice.toFixed(2)}</td>
                     </tr>
                 ))}
                 </tbody>
@@ -60,5 +109,4 @@ const StockOutRecordPage = () => {
     );
 };
 
-// Export the 'StockOutRecordPage' component as the default export
 export default StockOutRecordPage;

@@ -1,3 +1,4 @@
+// MainMenu.js
 import { Link } from 'react-router-dom';
 
 const MainMenu = () => {
@@ -23,7 +24,7 @@ const MainMenu = () => {
         cursor: 'pointer', // Change cursor on hover
         textDecoration: 'none', // Remove underlines from links
         textAlign: 'center', // Center text horizontally
-        transition: 'transform 0.1s ease-in-out'  // Add transition effect for scaling
+        transition: 'transform 0.1s ease-in-out' // Add transition effect for scaling
     };
 
     // Styling for the title
@@ -32,11 +33,6 @@ const MainMenu = () => {
         fontWeight: 'bold', // Make text bold
         marginBottom: '30px', // Add space below the title
         color: '#00008B' // Dark blue for title
-    };
-
-    // Styling for emphasized text
-    const emphasizedText = {
-        fontWeight: 'bold' // Make text bold
     };
 
     // Function to handle button click down event

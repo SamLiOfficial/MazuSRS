@@ -1,63 +1,82 @@
-import React, { useState } from 'react';  // Import necessary modules
+import React, { useState } from 'react';
 import axios from 'axios';
+import Modal from './popUps/Modal';
 
 const StockInForm = ({ item }) => {
-    // State variables to store form input values and response message
-    const [stockInAmount, setStockInAmount] = useState("");  // Initialize stockInAmount as an empty string
-    const [unitPrice, setUnitPrice] = useState("");  // Initialize unitPrice as an empty string
-    const [currencyUnit, setCurrencyUnit] = useState("CAD");  // Initialize currencyUnit as "CAD"
-    const [note, setNote] = useState("");  // Initialize note as an empty string
-    const [responseMessage, setResponseMessage] = useState("");  // State to hold the response
+    const [stockInAmount, setStockInAmount] = useState("");
+    const [unitPrice, setUnitPrice] = useState("");
+    const [currencyUnit, setCurrencyUnit] = useState("CAD");
+    const [note, setNote] = useState("");
+    const [responseMessage, setResponseMessage] = useState("");
+    const [showModal, setShowModal] = useState(false);
 
-    // Styling for form elements
-    const inputStyle = {
-        width: '200px',
-        padding: '10px',
-        margin: '10px',
+    const labelStyle = {
+        backgroundColor: '#00008B',
+        color: '#fff',
+        padding: '5px 10px',
         borderRadius: '5px',
-        border: '3px solid #00008B',  // Thick Dark Blue Line
-        backgroundColor: '#fff',  // White background
-        color: '#000'  // Black text
+        marginBottom: '5px',
+        width: '100px', // Set a fixed width for all labels
+        display: 'inline-block',
+        marginRight: '10px',
+        textAlign: 'left', // Align text to the right for uniform appearance
+        height: '25px',
+    };
+
+    const inputStyle = {
+        width: '200px', // You might need to adjust this width to align with the box
+        height: '10px',
+        padding: '10px',
+        margin: '10px 0',
+        borderRadius: '5px',
+        border: '3px solid #00008B',
+        backgroundColor: '#fff',
+        color: '#000',
     };
 
     const selectStyle = {
-        width: '226px',
-        padding: '10px',
-        margin: '10px',
+        width: '226px', // Adjusted width to align with the text input fields
+        height: '37px',
+        padding: '8px',
+        margin: '10px 0',
         borderRadius: '5px',
-        border: '3px solid #00008B',  // Thick Dark Blue Line
-        backgroundColor: '#fff',  // White background
-        color: '#000'  // Black text
+        border: '3px solid #00008B',
+        backgroundColor: '#fff',
+        color: '#000',
     };
 
     const buttonStyle = {
-        margin: '10px',
+        margin: '10px 0',
         padding: '10px',
         width: '100px',
-        backgroundColor: '#00008B',  // Dark Blue background
-        alignItems: 'center',
-        color: 'white',  // White text
+        backgroundColor: '#00008B',
+        color: 'white',
         borderRadius: '5px',
         cursor: 'pointer',
-        transition: '0.2s'
+        transition: '0.2s',
     };
 
     const rowContainerStyle = {
-        display: 'flex',  // Use Flexbox
-        justifyContent: 'space-between',  // Space items evenly
-        alignItems: 'center',  // Align items vertically in the center
-        margin: '10px 0',  // Vertical margin for each row
+
+        flexDirection: 'row',
+        alignItems: 'center',
+        margin: '10px 0',
     };
 
-    // Function to save the stock-in record
     const saveRecord = async () => {
-        // Check for valid input
-        if (!Number.isInteger(Number(stockInAmount)) || isNaN(Number(unitPrice))) {
-            setResponseMessage("Invalid Input");  // Update the response message if input is invalid
+
+        if (!Number.isInteger(Number(stockInAmount))) {
+            setResponseMessage("入库数量必须是整数");
+            setShowModal(true);
             return;
         }
 
-        // Create a record object to send to the server
+        if (isNaN(Number(unitPrice))) {
+            setResponseMessage("价格必须是数字");
+            setShowModal(true);
+            return;
+        }
+
         const record = {
             itemId: item.itemId,
             itemName: item.itemName,
@@ -72,51 +91,73 @@ const StockInForm = ({ item }) => {
         };
 
         try {
-            // Send a POST request to the server to save the record
             const res = await axios.post('http://localhost:8080/stock-in-record', record);
-            setResponseMessage(res.data);  // Update the response message with the server's response
+            setResponseMessage(res.data);
+            if (res.data.startsWith("Stock-in record and updated inventory stats saved!")) {
+                setResponseMessage("记录保存成功!");
+            } else {
+                setResponseMessage("记录保存失败!");
+            }
+            setShowModal(true);
         } catch (error) {
             console.error("Error saving record:", error);
-            setResponseMessage("Error saving record");  // Update the response message in case of an error
+            setResponseMessage("运算出错，请联系工作人员");
+            setShowModal(true);
         }
     };
 
     return (
-        <div>
-            {/* First row of input fields */}
+        <div style={{ backgroundColor: '#d4ebf2', padding: '10px' }}>
+            {/* Row 1 */}
             <div style={rowContainerStyle}>
+                <label style={labelStyle}>入库数量</label>
                 <input
                     style={inputStyle}
                     type="text"
-                    placeholder={`Stock-in amount`}
+                    placeholder="入库数量"
                     value={stockInAmount}
                     onChange={e => setStockInAmount(e.target.value)}
                 />
+            </div>
+            {/* Row 2 */}
+            <div style={rowContainerStyle}>
+                <label style={labelStyle}>价格/{item.unit}</label>
                 <input
                     style={inputStyle}
                     type="text"
-                    placeholder={`Price/${item.unit}`}
+                    placeholder={`价格/${item.unit}`}
                     value={unitPrice}
                     onChange={e => setUnitPrice(e.target.value)}
                 />
             </div>
-            {/* Second row of input fields */}
+            {/* Row 3 */}
             <div style={rowContainerStyle}>
-                <select style={selectStyle} value={currencyUnit} onChange={e => setCurrencyUnit(e.target.value)}>
+                <label style={labelStyle}>货币单位</label>
+                <select
+                    style={selectStyle}
+                    value={currencyUnit}
+                    onChange={e => setCurrencyUnit(e.target.value)}
+                >
                     <option value="CAD">CAD</option>
                     <option value="CNY">CNY</option>
                 </select>
+            </div>
+            {/* Row 4 */}
+            <div style={rowContainerStyle}>
+                <label style={labelStyle}>备注</label>
                 <input
                     style={inputStyle}
                     type="text"
-                    placeholder="Note"
+                    placeholder="备注"
                     value={note}
                     onChange={e => setNote(e.target.value)}
                 />
             </div>
-            {/* Submit button */}
-            <button style={buttonStyle} onClick={saveRecord}>Submit</button>
-            {/* Display the response message here */}
+            {/* Submit Button */}
+            <button style={buttonStyle} onClick={saveRecord}>确认</button>
+
+            {/* Modal */}
+            {showModal && <Modal onClose={() => setShowModal(false)} message={responseMessage} />}
         </div>
     );
 };
