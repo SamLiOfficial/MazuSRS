@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import EditPopUpForStockOut from '/Users/samli/test/frontend/src/components/popUps/EditPopUpForStockOut.js'; // Adjust the import path as necessary
 
 const ViewStockOutOneItemPage = () => {
     const [startDate, setStartDate] = useState(new Date());
@@ -12,6 +13,8 @@ const ViewStockOutOneItemPage = () => {
     const [selectedItemId, setSelectedItemId] = useState('');
     const [relatedRecords, setRelatedRecords] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    const [currentRecord, setCurrentRecord] = useState(null);
 
     useEffect(() => {
         axios.get('http://localhost:8080/all-items')
@@ -67,7 +70,32 @@ const ViewStockOutOneItemPage = () => {
         }
     };
 
-    // Styling
+    const handleEdit = (record) => {
+        setCurrentRecord(record);
+        setShowEditPopup(true);
+    };
+
+    const handleSaveEdit = async (editedRecord) => {
+        try {
+            await axios.put(`http://localhost:8080/stock-out-record/${editedRecord.recordId}`, editedRecord);
+            setRelatedRecords(relatedRecords.map(record => record.recordId === editedRecord.recordId ? editedRecord : record));
+            setShowEditPopup(false);
+            setCurrentRecord(null);
+        } catch (error) {
+            console.error('Error updating record:', error);
+        }
+    };
+
+    const handleDelete = async (recordId) => {
+        try {
+            await axios.delete(`http://localhost:8080/stock-out-record/${recordId}`);
+            setRelatedRecords(relatedRecords.filter(record => record.recordId !== recordId));
+        } catch (error) {
+            console.error('Error deleting record:', error);
+        }
+    };
+
+    // Styling variables (unchanged)
     const datePickerStyle = {
         padding: '10px',
         margin: '10px',
@@ -130,7 +158,7 @@ const ViewStockOutOneItemPage = () => {
                 <label style={labelStyle}>货品</label>
                 <div style={{ position: 'relative' }}>
                     <input type="text" value={inputValue} onChange={handleInputChange} placeholder="搜索货品..." />
-                    <button onClick={handleArrowClick} >▼</button>
+                    <button onClick={handleArrowClick} style={buttonStyle}>▼</button>
                     {showDropdown && (
                         <div style={{ position: 'absolute', zIndex: 1, backgroundColor: 'white', border: '1px solid #ddd' }}>
                             {suggestions.map(item => (
@@ -155,8 +183,10 @@ const ViewStockOutOneItemPage = () => {
                     <th style={headerStyle}>单位</th>
                     <th style={headerStyle}>出货数量</th>
                     <th style={headerStyle}>售价</th>
+                    <th style={headerStyle}>总价</th>
                     <th style={headerStyle}>货币</th>
                     <th style={headerStyle}>备注</th>
+                    <th style={headerStyle}>操作</th> {/* Added column for actions */}
                 </tr>
                 </thead>
                 <tbody>
@@ -170,14 +200,26 @@ const ViewStockOutOneItemPage = () => {
                         <td style={cellStyle}>{record.unit}</td>
                         <td style={cellStyle}>{record.stockOutAmount}</td>
                         <td style={cellStyle}>${record.sellPrice.toFixed(2)}</td>
+                        <td style={cellStyle}>${(record.sellPrice * record.stockOutAmount).toFixed(2)}</td>
                         <td style={cellStyle}>{record.currencyUnit}</td>
                         <td style={cellStyle}>{record.note}</td>
+                        <td style={cellStyle}>
+                            <button onClick={() => handleEdit(record)} style={buttonStyle}>Edit</button>
+                            <button onClick={() => handleDelete(record.recordId)} style={buttonStyle}>Delete</button>
+                        </td>
                     </tr>
                 ))}
                 </tbody>
             </table>
 
-
+            {showEditPopup && (
+                <EditPopUpForStockOut
+                    record={currentRecord}
+                    show={showEditPopup}
+                    onSave={handleSaveEdit}
+                    onClose={() => setShowEditPopup(false)}
+                />
+            )}
         </div>
     );
 };

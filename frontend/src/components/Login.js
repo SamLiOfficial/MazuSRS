@@ -1,14 +1,31 @@
-// Login.js
-
+// Import useState, useNavigate from 'react' and axios
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Import axios for making HTTP requests
+import loginImage from '../images/mazu.png'; // Adjust the path according to your file structure
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    // Styling similar to MainMenu.js
+    // Define the base URL of your backend
+    const baseURL = 'http://localhost:8080/api/login'; // Adjust this URL based on your backend configuration
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(baseURL, { username, password });
+            console.log(response.data); // For debugging purposes, to see the backend response
+            localStorage.setItem('isAuthenticated', 'true');
+            navigate('/'); // Navigate to the homepage or dashboard upon successful login
+        } catch (error) {
+            console.error('Authentication failed:', error);
+            alert('Invalid credentials'); // Alert the user if login fails
+        }
+    };
+
+    // Styles
     const loginStyle = {
         display: 'flex',
         flexDirection: 'column',
@@ -23,10 +40,10 @@ const Login = () => {
         padding: '10px',
         fontSize: '16px',
         borderRadius: '5px',
-        border: '2px solid #00008B', // Make the border slightly thicker for better visual impact
+        border: '2px solid #00008B',
         width: '250px',
-        outline: 'none', // Removing the default outline
-        transition: 'border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out', // Smooth transition for border color and shadow
+        outline: 'none',
+        transition: 'border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
     };
 
     const buttonStyle = {
@@ -35,13 +52,13 @@ const Login = () => {
         padding: '15px 30px',
         fontSize: '18px',
         borderRadius: '5px',
-        backgroundColor: '#00008B', // Original background color
+        backgroundColor: '#00008B',
         color: 'white',
         cursor: 'pointer',
         textDecoration: 'none',
         textAlign: 'center',
         border: 'none',
-        transition: 'background-color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out', // Smooth transition for background color, transform, and shadow
+        transition: 'background-color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
     };
 
     const titleStyle = {
@@ -51,18 +68,14 @@ const Login = () => {
         color: '#00008B'
     };
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-        if (username === 'correctUsername' && password === 'correctPassword') {
-            localStorage.setItem('isAuthenticated', 'true');
-            navigate('/');
-        } else {
-            alert('Invalid credentials');
-        }
+    const imageStyle = {
+        maxWidth: '200px',
+        marginBottom: '20px',
     };
 
     return (
         <div style={loginStyle}>
+            <img src={loginImage} style={imageStyle} alt="Login" />
             <div style={titleStyle}>Login</div>
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <input
@@ -71,48 +84,15 @@ const Login = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     style={inputStyle}
-                    onFocus={(e) => {
-                        e.target.style.borderColor = '#007BFF'; // Change border color to a bright color on focus
-                        e.target.style.boxShadow = '0 0 8px #007BFF'; // Add a glowing shadow effect
-                    }}
-                    onBlur={(e) => {
-                        e.target.style.borderColor = '#00008B'; // Revert to original border color
-                        e.target.style.boxShadow = 'none'; // Remove the shadow
-                    }}
                 />
                 <input
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    style={inputStyle} // Using the same styled inputStyle as for the username input
-                    onFocus={(e) => {
-                        e.target.style.borderColor = '#007BFF'; // Change border color to a bright color on focus
-                        e.target.style.boxShadow = '0 0 8px #007BFF'; // Add a glowing shadow effect
-                    }}
-                    onBlur={(e) => {
-                        e.target.style.borderColor = '#00008B'; // Revert to original border color
-                        e.target.style.boxShadow = 'none'; // Remove the shadow
-                    }}
+                    style={inputStyle}
                 />
-                <button
-                    type="submit"
-                    style={buttonStyle}
-                    onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#007BFF'; // Change background color on hover
-                        e.target.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)'; // Add a subtle shadow for depth
-                    }}
-                    onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = '#00008B'; // Revert to original background color
-                        e.target.style.boxShadow = 'none'; // Remove the shadow
-                    }}
-                    onMouseDown={(e) => {
-                        e.target.style.transform = 'scale(0.98)'; // Slightly scale down the button on click
-                    }}
-                    onMouseUp={(e) => {
-                        e.target.style.transform = 'scale(1)'; // Reset button scale on release
-                    }}
-                >Login</button>
+                <button type="submit" style={buttonStyle}>Login</button>
             </form>
         </div>
     );

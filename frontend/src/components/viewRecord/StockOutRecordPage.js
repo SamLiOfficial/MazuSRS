@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
+import EditPopUpForStockOut from '/Users/samli/test/frontend/src/components/popUps/EditPopUpForStockOut.js'; // Ensure the correct path
 
 const StockOutRecordPage = () => {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [records, setRecords] = useState([]);
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    const [currentRecord, setCurrentRecord] = useState(null);
 
     const handleSubmit = async () => {
         try {
@@ -22,7 +25,31 @@ const StockOutRecordPage = () => {
         }
     };
 
-    // Styling for date picker and submit button
+    const handleDelete = async (recordId) => {
+        try {
+            await axios.delete(`http://localhost:8080/stock-out-record/${recordId}`);
+            setRecords(records.filter(record => record.recordId !== recordId));
+        } catch (error) {
+            console.error('Error deleting record:', error);
+        }
+    };
+
+    const handleEdit = (record) => {
+        setCurrentRecord(record);
+        setShowEditPopup(true);
+    };
+
+    const handleSaveEdit = async (editedRecord) => {
+        try {
+            await axios.put(`http://localhost:8080/stock-out-record/${editedRecord.recordId}`, editedRecord);
+            setRecords(records.map(record => record.recordId === editedRecord.recordId ? editedRecord : record));
+            setShowEditPopup(false);
+            setCurrentRecord(null);
+        } catch (error) {
+            console.error('Error updating record:', error);
+        }
+    };
+
     const datePickerStyle = {
         padding: '10px',
         margin: '10px',
@@ -91,6 +118,8 @@ const StockOutRecordPage = () => {
                     <th style={headerStyle}>名称</th>
                     <th style={headerStyle}>数量</th>
                     <th style={headerStyle}>售价</th>
+                    <th style={headerStyle}>总价</th>
+                    <th style={headerStyle}>操作</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -101,10 +130,23 @@ const StockOutRecordPage = () => {
                         <td style={cellStyle}>{record.itemName}</td>
                         <td style={cellStyle}>{record.stockOutAmount}</td>
                         <td style={cellStyle}>${record.sellPrice.toFixed(2)}</td>
+                        <td style={cellStyle}>${(record.sellPrice * record.stockOutAmount).toFixed(2)}</td>
+                        <td style={cellStyle}>
+                            <button onClick={() => handleEdit(record)} style={buttonStyle}>Edit</button>
+                            <button onClick={() => handleDelete(record.recordId)} style={buttonStyle}>Delete</button>
+                        </td>
                     </tr>
                 ))}
                 </tbody>
             </table>
+            {showEditPopup && (
+                <EditPopUpForStockOut
+                    record={currentRecord}
+                    show={showEditPopup}
+                    onSave={handleSaveEdit}
+                    onClose={() => setShowEditPopup(false)}
+                />
+            )}
         </div>
     );
 };

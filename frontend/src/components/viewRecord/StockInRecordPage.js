@@ -1,22 +1,25 @@
-import React, { useState } from 'react'; // Import React and useState from 'react' library
-import DatePicker from 'react-datepicker'; // Import DatePicker component
-import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker CSS
-import axios from 'axios'; // Import axios for making HTTP requests
+import React, { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import axios from 'axios';
+import EditPopUpForStockIn from '/Users/samli/test/frontend/src/components/popUps/EditPopUpForStockIn.js'; // Adjust the import path as necessary
 
 const StockInRecordPage = () => {
-    const [startDate, setStartDate] = useState(new Date()); // Initialize start date state
-    const [endDate, setEndDate] = useState(new Date()); // Initialize end date state
-    const [records, setRecords] = useState([]); // Initialize records state
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+    const [records, setRecords] = useState([]);
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    const [currentRecord, setCurrentRecord] = useState(null);
 
     const handleSubmit = async () => {
         try {
             const response = await axios.get('http://localhost:8080/stock-in-statistics', {
                 params: {
-                    startDate: startDate.toISOString().split('T')[0], // Format start date as YYYY-MM-DD
-                    endDate: endDate.toISOString().split('T')[0]     // Format end date as YYYY-MM-DD
+                    startDate: startDate.toISOString().split('T')[0],
+                    endDate: endDate.toISOString().split('T')[0]
                 }
             });
-            setRecords(response.data); // Set the 'records' state with the response data
+            setRecords(response.data);
         } catch (error) {
             console.error('Error fetching records:', error);
         }
@@ -31,58 +34,68 @@ const StockInRecordPage = () => {
         }
     };
 
-    // Styling for date picker and submit button
+    const handleEdit = (record) => {
+        setCurrentRecord(record);
+        setShowEditPopup(true);
+    };
+
+    const handleSaveEdit = async (editedRecord) => {
+        try {
+            await axios.put(`http://localhost:8080/stock-in-record/${editedRecord.recordId}`, editedRecord);
+            setRecords(records.map(record => record.recordId === editedRecord.recordId ? editedRecord : record));
+            setShowEditPopup(false);
+            setCurrentRecord(null);
+        } catch (error) {
+            console.error('Error updating record:', error);
+        }
+    };
+
     const datePickerStyle = {
         padding: '10px',
         margin: '10px',
         borderRadius: '5px',
         border: '1px solid #ccc',
-        height: '40px' // Increased height for better usability
+        height: '40px'
     };
 
-    // Style for the first date picker to add space before the "End date" label
     const firstDatePickerStyle = {
         ...datePickerStyle,
-        marginRight: '20px' // Additional right margin for spacing
+        marginRight: '20px'
     };
 
     const buttonStyle = {
-        ...datePickerStyle, // Apply date picker styles
+        ...datePickerStyle,
         cursor: 'pointer',
         backgroundColor: '#d4ebf2',
         color: 'black',
         fontWeight: 'bold'
     };
 
-    // Style for labels
     const labelStyle = {
-        color: '#00008B', // Dark blue color
-        marginRight: '5px', // Space before date picker
-        fontWeight: 'bold' // Make label text bold
+        color: '#00008B',
+        marginRight: '5px',
+        fontWeight: 'bold'
     };
 
-    // Styling for the table
     const tableStyle = {
-        width: 'calc(100% - 80px)', // Full width minus padding on both sides
-        margin: '20px 40px', // 40px horizontal margin (padding effect)
+        width: 'calc(100% - 80px)',
+        margin: '20px 40px',
         borderCollapse: 'collapse',
-        backgroundColor: '#d4ebf2', // Light blue background for the table
-        borderRadius: '10px', // Rounded corners for the table
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' // Box shadow for a subtle 3D effect
+        backgroundColor: '#d4ebf2',
+        borderRadius: '10px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
     };
 
-    // Styling for table cells
     const cellStyle = {
         padding: '10px',
         borderBottom: '1px solid #ddd',
-        color: 'black' // Black text for content
+        color: 'black'
     };
 
-    // Styling for table headers
     const headerStyle = {
-        ...cellStyle, // Apply cell style
-        backgroundColor: '#00008B', // Dark blue background for headers
-        color: 'white', // White text for headers
+        ...cellStyle,
+        backgroundColor: '#00008B',
+        color: 'white',
         textAlign: 'left'
     };
 
@@ -90,10 +103,10 @@ const StockInRecordPage = () => {
         <div>
             <h1 style={{ textAlign: 'center', color: '#00008B' }}>入库记录表</h1>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <label style={labelStyle}>开始日期</label> {/* Label for start date */}
+                <label style={labelStyle}>开始日期</label>
                 <DatePicker selected={startDate} onChange={date => setStartDate(date)} style={firstDatePickerStyle} />
-                <div style={{ width: '20px' }}></div> {/* Space between the first date picker and the "End date" label */}
-                <label style={labelStyle}>结束日期</label> {/* Label for end date */}
+                <div style={{ width: '20px' }}></div>
+                <label style={labelStyle}>结束日期</label>
                 <DatePicker selected={endDate} onChange={date => setEndDate(date)} style={datePickerStyle} />
                 <button onClick={handleSubmit} style={buttonStyle}>确认</button>
             </div>
@@ -106,7 +119,7 @@ const StockInRecordPage = () => {
                     <th style={headerStyle}>数量</th>
                     <th style={headerStyle}>单价</th>
                     <th style={headerStyle}>总价</th>
-                    <th style={headerStyle}>修改</th>
+                    <th style={headerStyle}>操作</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -119,12 +132,21 @@ const StockInRecordPage = () => {
                         <td style={cellStyle}>${record.unitPrice.toFixed(2)}</td>
                         <td style={cellStyle}>${record.totalPrice.toFixed(2)}</td>
                         <td style={cellStyle}>
+                            <button onClick={() => handleEdit(record)} style={buttonStyle}>Edit</button>
                             <button onClick={() => handleDelete(record.recordId)} style={buttonStyle}>Delete</button>
                         </td>
                     </tr>
                 ))}
                 </tbody>
             </table>
+            {showEditPopup && (
+                <EditPopUpForStockIn
+                    record={currentRecord}
+                    show={showEditPopup}
+                    onSave={handleSaveEdit}
+                    onClose={() => setShowEditPopup(false)}
+                />
+            )}
         </div>
     );
 };

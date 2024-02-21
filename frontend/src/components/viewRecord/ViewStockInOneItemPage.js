@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import EditPopUpForStockIn from '/Users/samli/test/frontend/src/components/popUps/EditPopUpForStockIn.js'; // Adjust the import path as necessary
 
 const ViewStockInOneItemPage = () => {
     const [startDate, setStartDate] = useState(new Date());
@@ -14,6 +15,8 @@ const ViewStockInOneItemPage = () => {
     const [selectedItemId, setSelectedItemId] = useState('');
     const [relatedRecords, setRelatedRecords] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    const [currentRecord, setCurrentRecord] = useState(null);
 
     useEffect(() => {
         axios.get('http://localhost:8080/all-items')
@@ -66,6 +69,31 @@ const ViewStockInOneItemPage = () => {
                 .catch(error => console.error('Error fetching related records:', error));
         } else {
             alert('Please select valid dates and an item.');
+        }
+    };
+
+    const handleEdit = (record) => {
+        setCurrentRecord(record);
+        setShowEditPopup(true);
+    };
+
+    const handleSaveEdit = async (editedRecord) => {
+        try {
+            await axios.put(`http://localhost:8080/stock-in-record/${editedRecord.recordId}`, editedRecord);
+            setRelatedRecords(relatedRecords.map(record => record.recordId === editedRecord.recordId ? editedRecord : record));
+            setShowEditPopup(false);
+            setCurrentRecord(null);
+        } catch (error) {
+            console.error('Error updating record:', error);
+        }
+    };
+
+    const handleDelete = async (recordId) => {
+        try {
+            await axios.delete(`http://localhost:8080/stock-in-record/${recordId}`);
+            setRelatedRecords(relatedRecords.filter(record => record.recordId !== recordId));
+        } catch (error) {
+            console.error('Error deleting record:', error);
         }
     };
 
@@ -132,7 +160,7 @@ const ViewStockInOneItemPage = () => {
                 <label style={labelStyle}>货品</label>
                 <div style={{ position: 'relative' }}>
                     <input type="text" value={inputValue} onChange={handleInputChange} placeholder="搜索货品..." />
-                    <button onClick={handleArrowClick} >▼</button>
+                    <button onClick={handleArrowClick} style={buttonStyle}>▼</button>
                     {showDropdown && (
                         <div style={{ position: 'absolute', zIndex: 1, backgroundColor: 'white', border: '1px solid #ddd' }}>
                             {suggestions.map(item => (
@@ -146,30 +174,43 @@ const ViewStockInOneItemPage = () => {
                 <button onClick={handleSubmit} style={buttonStyle}>确认</button>
             </div>
 
-                <table style={tableStyle}>
-                    <thead>
-                    <tr>
-                        <th style={headerStyle}>日期</th>
-                        <th style={headerStyle}>货品ID</th>
-                        <th style={headerStyle}>名称</th>
-                        <th style={headerStyle}>入库数量</th>
-                        <th style={headerStyle}>单价</th>
-                        <th style={headerStyle}>总价</th>
+            <table style={tableStyle}>
+                <thead>
+                <tr>
+                    <th style={headerStyle}>日期</th>
+                    <th style={headerStyle}>货品ID</th>
+                    <th style={headerStyle}>名称</th>
+                    <th style={headerStyle}>入库数量</th>
+                    <th style={headerStyle}>单价</th>
+                    <th style={headerStyle}>总价</th>
+                    <th style={headerStyle}>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {relatedRecords.map(record => (
+                    <tr key={record.recordId}>
+                        <td style={cellStyle}>{record.date}</td>
+                        <td style={cellStyle}>{record.itemId}</td>
+                        <td style={cellStyle}>{record.itemName}</td>
+                        <td style={cellStyle}>{record.stockInAmount}</td>
+                        <td style={cellStyle}>${record.unitPrice.toFixed(2)}</td>
+                        <td style={cellStyle}>${record.totalPrice.toFixed(2)}</td>
+                        <td style={cellStyle}>
+                            <button onClick={() => handleEdit(record)} style={buttonStyle}>Edit</button>
+                            <button onClick={() => handleDelete(record.recordId)} style={buttonStyle}>Delete</button>
+                        </td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    {relatedRecords.map(record => (
-                        <tr key={record.recordId}>
-                            <td style={cellStyle}>{record.date}</td>
-                            <td style={cellStyle}>{record.itemId}</td>
-                            <td style={cellStyle}>{record.itemName}</td>
-                            <td style={cellStyle}>{record.stockInAmount}</td>
-                            <td style={cellStyle}>${record.unitPrice.toFixed(2)}</td>
-                            <td style={cellStyle}>${record.totalPrice.toFixed(2)}</td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                ))}
+                </tbody>
+            </table>
+            {showEditPopup && (
+                <EditPopUpForStockIn
+                    record={currentRecord}
+                    show={showEditPopup}
+                    onSave={handleSaveEdit}
+                    onClose={() => setShowEditPopup(false)}
+                />
+            )}
         </div>
     );
 };
