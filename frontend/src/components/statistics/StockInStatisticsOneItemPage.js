@@ -24,7 +24,7 @@ const StockInStatisticsOneItemPage = () => {
 
     // useEffect hook to fetch items from the server when the component mounts
     useEffect(() => {
-        axios.get('http://localhost:8080/all-items') // HTTP GET request to fetch all items
+        axios.get(`${process.env.REACT_APP_API_URL}/all-items`) // HTTP GET request to fetch all items
             .then(response => {
                 // Sorting the fetched items and updating the items state
                 setItems(response.data.sort((a, b) => a.formattedString.localeCompare(b.formattedString)));
@@ -67,7 +67,7 @@ const StockInStatisticsOneItemPage = () => {
     // Function to handle the submission of the form
     const handleSubmit = () => {
         if (selectedItemId && startDate && endDate) { // Checking if an item is selected and dates are valid
-            axios.get('http://localhost:8080/stock-in-summary-by-item', { // HTTP GET request with parameters
+            axios.get(`${process.env.REACT_APP_API_URL}/stock-in-summary-by-item`, { // HTTP GET request with parameters
                 params: {
                     startDate: startDate.toISOString().split('T')[0], // Formatting startDate to YYYY-MM-DD
                     endDate: endDate.toISOString().split('T')[0], // Formatting endDate to YYYY-MM-DD

@@ -8,7 +8,7 @@ const InventoryStatsTable = () => { // Define a functional React component calle
     useEffect(() => { // Define an effect that runs after component render
         const fetchData = async () => { // Define an asynchronous function fetchData
             try {
-                const response = await axios.get('http://localhost:8080/inventory-stats'); // Send a GET request to fetch data from the given URL
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/inventory-stats`); // Send a GET request to fetch data from the given URL
                 setStats(response.data); // Update 'stats' state with the fetched data
             } catch (error) { // Handle errors, if any
                 console.error("Error fetching data:", error); // Log the error to the console

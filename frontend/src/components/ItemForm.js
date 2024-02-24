@@ -129,7 +129,7 @@ const ItemForm = () => {
 
         try {
             // Attempt to send a POST request to save the item
-            const res = await axios.post('http://localhost:8080/item', item);
+            const res = await axios.post(`${process.env.REACT_APP_API_URL}/item`, item);
             // Determine response message based on server response
             const message = res.data.startsWith("Item and initial")
                 ? "货品保存成功!"

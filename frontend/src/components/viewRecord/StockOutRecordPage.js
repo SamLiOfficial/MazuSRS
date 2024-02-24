@@ -13,7 +13,7 @@ const StockOutRecordPage = () => {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/stock-out-statistics', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/stock-out-statistics`, {
                 params: {
                     startDate: startDate.toISOString().split('T')[0],
                     endDate: endDate.toISOString().split('T')[0]
@@ -27,7 +27,7 @@ const StockOutRecordPage = () => {
 
     const handleDelete = async (recordId) => {
         try {
-            await axios.delete(`http://localhost:8080/stock-out-record/${recordId}`);
+            await axios.delete(`${process.env.REACT_APP_API_URL}/stock-out-record/${recordId}`);
             setRecords(records.filter(record => record.recordId !== recordId));
         } catch (error) {
             console.error('Error deleting record:', error);
@@ -41,7 +41,7 @@ const StockOutRecordPage = () => {
 
     const handleSaveEdit = async (editedRecord) => {
         try {
-            await axios.put(`http://localhost:8080/stock-out-record/${editedRecord.recordId}`, editedRecord);
+            await axios.put(`${process.env.REACT_APP_API_URL}/stock-out-record/${editedRecord.recordId}`, editedRecord);
             setRecords(records.map(record => record.recordId === editedRecord.recordId ? editedRecord : record));
             setShowEditPopup(false);
             setCurrentRecord(null);

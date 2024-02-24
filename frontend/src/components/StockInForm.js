@@ -91,7 +91,7 @@ const StockInForm = ({ item }) => {
         };
 
         try {
-            const res = await axios.post('http://localhost:8080/stock-in-record', record);
+            const res = await axios.post(`${process.env.REACT_APP_API_URL}/stock-in-record`, record);
             setResponseMessage(res.data);
             if (res.data.startsWith("Stock-in record and updated inventory stats saved!")) {
                 setResponseMessage("记录保存成功!");

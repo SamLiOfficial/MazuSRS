@@ -25,7 +25,7 @@ const StockOutStatistics = () => {
     const handleSummarize = async () => {
         try {
             // Perform an HTTP GET request to fetch summarized stock-out data
-            const response = await axios.get('http://localhost:8080/summarize-stock-out', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/summarize-stock-out`, {
                 params: {
                     startDate: startDate.toISOString().split('T')[0], // Format the startDate as YYYY-MM-DD
                     endDate: endDate.toISOString().split('T')[0]     // Format the endDate as YYYY-MM-DD

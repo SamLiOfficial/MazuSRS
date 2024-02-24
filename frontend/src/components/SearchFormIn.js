@@ -24,38 +24,38 @@ const SearchForm = () => {
 
     // Function to fetch brands from the backend
     const fetchBrands = async () => {
-        const res = await axios.get('http://localhost:8080/brands');
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/brands`);
         setBrands(res.data);
     };
 
     // Function to fetch item types based on selected brand
     const fetchItemTypes = async (brand) => {
-        const res = await axios.get(`http://localhost:8080/itemTypes/${brand}`);
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/itemTypes/${brand}`);
         setItemTypes(res.data);
     };
 
     // Function to fetch item names based on selected brand and item type
     const fetchItemNames = async (brand, itemType) => {
-        const res = await axios.get(`http://localhost:8080/itemNames/${brand}/${itemType}`);
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/itemNames/${brand}/${itemType}`);
         setItemNames(res.data);
     };
 
     // Function to fetch units based on selected brand, item type, and item name
     const fetchUnits = async (brand, itemType, itemName) => {
-        const res = await axios.get(`http://localhost:8080/units/${brand}/${itemType}/${itemName}`);
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/units/${brand}/${itemType}/${itemName}`);
         setUnits(res.data);
     };
 
     // Function to fetch item sizes based on selected criteria
     const fetchItemSizes = async (brand, itemType, itemName, unit) => {
-        const res = await axios.get(`http://localhost:8080/sizes/${brand}/${itemType}/${itemName}/${unit}`);
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/sizes/${brand}/${itemType}/${itemName}/${unit}`);
         setItemSizes(res.data);
     };
 
     // Function to search for items based on the selected criteria
     const searchItem = async () => {
         const { brand, itemType, itemName, unit, itemSize } = searchCriteria;
-        const res = await axios.get(`http://localhost:8080/searchItem?brand=${brand}&itemType=${itemType}&itemName=${itemName}&unit=${unit}&itemSize=${itemSize}`);
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/searchItem?brand=${brand}&itemType=${itemType}&itemName=${itemName}&unit=${unit}&itemSize=${itemSize}`);
         setSearchResult(res.data);
         setHasSearched(true);
     };

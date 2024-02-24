@@ -14,7 +14,7 @@ const StockOutStatisticsOneItemPage = () => {  // Define a functional component.
     const [showDropdown, setShowDropdown] = useState(false);  // Initialize a state variable for dropdown visibility.
 
     useEffect(() => {
-        axios.get('http://localhost:8080/all-items')  // Make a GET request to fetch all items.
+        axios.get(`${process.env.REACT_APP_API_URL}/all-items`)  // Make a GET request to fetch all items.
             .then(response => {
                 setItems(response.data.sort((a, b) => a.formattedString.localeCompare(b.formattedString)));  // Set the items state with sorted data.
             })
@@ -51,7 +51,7 @@ const StockOutStatisticsOneItemPage = () => {  // Define a functional component.
 
     const handleSubmit = () => {
         if (selectedItemId && startDate && endDate) {
-            axios.get('http://localhost:8080/stock-out-summary-by-item', {
+            axios.get(`${process.env.REACT_APP_API_URL}/stock-out-summary-by-item`, {
                 params: {
                     startDate: startDate.toISOString().split('T')[0],  // Format the start date.
                     endDate: endDate.toISOString().split('T')[0],  // Format the end date.

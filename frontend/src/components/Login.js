@@ -10,7 +10,7 @@ const Login = () => {
     const navigate = useNavigate();
 
     // Define the base URL of your backend
-    const baseURL = 'http://localhost:8080/api/login'; // Adjust this URL based on your backend configuration
+    const baseURL = `${process.env.REACT_APP_API_URL}/api/login`; // Adjust this URL based on your backend configuration
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -21,7 +21,7 @@ const Login = () => {
             navigate('/'); // Navigate to the homepage or dashboard upon successful login
         } catch (error) {
             console.error('Authentication failed:', error);
-            alert('Invalid credentials'); // Alert the user if login fails
+            alert('There is a error: Invalid credentials' + error); // Alert the user if login fails
         }
     };
 
@@ -76,7 +76,7 @@ const Login = () => {
     return (
         <div style={loginStyle}>
             <img src={loginImage} style={imageStyle} alt="Login" />
-            <div style={titleStyle}>Login</div>
+            <div style={titleStyle}>Login BIG</div>
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <input
                     type="text"

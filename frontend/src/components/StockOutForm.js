@@ -94,7 +94,7 @@ const StockOutForm = ({ item, currentStock }) => {
         };
 
         try {
-            const res = await axios.post('http://localhost:8080/stock-out-record', record);
+            const res = await axios.post(`${process.env.REACT_APP_API_URL}/stock-out-record`, record);
             if (res.data.startsWith("Stock-out record saved! Attributes:")) {
                 setResponseMessage("记录保存成功!");
             } else {

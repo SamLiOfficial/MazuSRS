@@ -25,7 +25,7 @@ const StockInStatistics = () => {
     const handleSummarize = async () => {
         try {
             // Making a GET request using axios to the specified URL with startDate and endDate as parameters
-            const response = await axios.get('http://localhost:8080/summarize-stock-in', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/summarize-stock-in`, {
                 params: {
                     startDate: startDate.toISOString().split('T')[0], // Formatting startDate to YYYY-MM-DD
                     endDate: endDate.toISOString().split('T')[0]     // Formatting endDate to YYYY-MM-DD
