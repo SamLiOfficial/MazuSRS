@@ -4,28 +4,39 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios'; // Import axios for making HTTP requests
 import loginImage from '../images/mazu.png'; // Adjust the path according to your file structure
 
+// Define a functional component called Login
 const Login = () => {
+    // Define state variables username and password using useState hook
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    // Use useNavigate hook to handle navigation
     const navigate = useNavigate();
 
     // Define the base URL of your backend
     const baseURL = `${process.env.REACT_APP_API_URL}/api/login`; // Adjust this URL based on your backend configuration
 
+    // Define handleLogin function to handle login form submission
     const handleLogin = async (e) => {
+        // Prevent default form submission behavior
         e.preventDefault();
         try {
+            // Send a POST request to the backend with username and password
             const response = await axios.post(baseURL, { username, password });
-            console.log(response.data); // For debugging purposes, to see the backend response
+            // Log the response data for debugging purposes
+            console.log(response.data);
+            // Store authentication status in local storage upon successful login
             localStorage.setItem('isAuthenticated', 'true');
-            navigate('/'); // Navigate to the homepage or dashboard upon successful login
+            // Navigate to the homepage or dashboard upon successful login
+            navigate('/');
         } catch (error) {
+            // Log error message if authentication fails
             console.error('Authentication failed:', error);
-            alert('There is a error: Invalid credentials' + error); // Alert the user if login fails
+            // Alert the user if login fails
+            alert('There is a error: Invalid credentials' + error);
         }
     };
 
-    // Styles
+    // Styles for login page
     const loginStyle = {
         display: 'flex',
         flexDirection: 'column',
@@ -73,11 +84,16 @@ const Login = () => {
         marginBottom: '20px',
     };
 
+    // Return the JSX for the login page
     return (
         <div style={loginStyle}>
+            {/* Display login image */}
             <img src={loginImage} style={imageStyle} alt="Login" />
-            <div style={titleStyle}>Login BIG</div>
+            {/* Display login title */}
+            <div style={titleStyle}>Login</div>
+            {/* Login form */}
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                {/* Input field for username */}
                 <input
                     type="text"
                     placeholder="Username"
@@ -85,6 +101,7 @@ const Login = () => {
                     onChange={(e) => setUsername(e.target.value)}
                     style={inputStyle}
                 />
+                {/* Input field for password */}
                 <input
                     type="password"
                     placeholder="Password"
@@ -92,10 +109,12 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     style={inputStyle}
                 />
+                {/* Button to submit the form */}
                 <button type="submit" style={buttonStyle}>Login</button>
             </form>
         </div>
     );
 };
 
+// Export the Login component as default
 export default Login;

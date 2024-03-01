@@ -1,21 +1,25 @@
+// Import necessary modules from React and axios library
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import EditPopUpForStockOut from '/Users/samli/test/frontend/src/components/popUps/EditPopUpForStockOut.js'; // Adjust the import path as necessary
 
+// Define the ViewStockOutOneItemPage functional component
 const ViewStockOutOneItemPage = () => {
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
-    const [items, setItems] = useState([]);
-    const [inputValue, setInputValue] = useState('');
-    const [suggestions, setSuggestions] = useState([]);
-    const [selectedItemId, setSelectedItemId] = useState('');
-    const [relatedRecords, setRelatedRecords] = useState([]);
-    const [showDropdown, setShowDropdown] = useState(false);
-    const [showEditPopup, setShowEditPopup] = useState(false);
-    const [currentRecord, setCurrentRecord] = useState(null);
+    // Initialize state variables using the useState hook
+    const [startDate, setStartDate] = useState(new Date()); // State for start date
+    const [endDate, setEndDate] = useState(new Date()); // State for end date
+    const [items, setItems] = useState([]); // State for items
+    const [inputValue, setInputValue] = useState(''); // State for input value
+    const [suggestions, setSuggestions] = useState([]); // State for suggestions
+    const [selectedItemId, setSelectedItemId] = useState(''); // State for selected item ID
+    const [relatedRecords, setRelatedRecords] = useState([]); // State for related records
+    const [showDropdown, setShowDropdown] = useState(false); // State to show/hide dropdown
+    const [showEditPopup, setShowEditPopup] = useState(false); // State to show/hide edit popup
+    const [currentRecord, setCurrentRecord] = useState(null); // State for current record
 
+    // useEffect hook to fetch items data from the API upon component mount
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_API_URL}/all-items`)
             .then(response => {
@@ -24,6 +28,7 @@ const ViewStockOutOneItemPage = () => {
             .catch(error => console.error('Error fetching items:', error));
     }, []);
 
+    // Function to handle input change in the search bar
     const handleInputChange = (e) => {
         const value = e.target.value;
         setInputValue(value);
@@ -31,6 +36,7 @@ const ViewStockOutOneItemPage = () => {
         setShowDropdown(true);
     };
 
+    // Function to handle arrow button click to toggle dropdown visibility
     const handleArrowClick = () => {
         setShowDropdown(!showDropdown);
         if (!showDropdown) {
@@ -38,6 +44,7 @@ const ViewStockOutOneItemPage = () => {
         }
     };
 
+    // Function to update suggestions based on input value
     const updateSuggestions = (value) => {
         const filteredSuggestions = items.filter(item =>
             item.formattedString.toLowerCase().includes(value.toLowerCase())
@@ -45,6 +52,7 @@ const ViewStockOutOneItemPage = () => {
         setSuggestions(filteredSuggestions);
     };
 
+    // Function to handle click on suggestion to select an item
     const handleSuggestionClick = (itemId, formattedString) => {
         setInputValue(formattedString);
         setSelectedItemId(itemId);
@@ -52,6 +60,7 @@ const ViewStockOutOneItemPage = () => {
         setShowDropdown(false);
     };
 
+    // Function to handle form submission
     const handleSubmit = () => {
         if (selectedItemId && startDate && endDate) {
             axios.get(`${process.env.REACT_APP_API_URL}/stock-out-record-by-item`, {
@@ -70,11 +79,13 @@ const ViewStockOutOneItemPage = () => {
         }
     };
 
+    // Function to handle edit button click
     const handleEdit = (record) => {
         setCurrentRecord(record);
         setShowEditPopup(true);
     };
 
+    // Function to handle saving edited record
     const handleSaveEdit = async (editedRecord) => {
         try {
             await axios.put(`${process.env.REACT_APP_API_URL}/stock-out-record/${editedRecord.recordId}`, editedRecord);
@@ -86,6 +97,7 @@ const ViewStockOutOneItemPage = () => {
         }
     };
 
+    // Function to handle deleting a record
     const handleDelete = async (recordId) => {
         try {
             await axios.delete(`${process.env.REACT_APP_API_URL}/stock-out-record/${recordId}`);
@@ -95,7 +107,7 @@ const ViewStockOutOneItemPage = () => {
         }
     };
 
-    // Styling variables (unchanged)
+    // Styling variables for date picker, input, button, table, and cells (unchanged)
     const datePickerStyle = {
         padding: '10px',
         margin: '10px',
@@ -145,22 +157,28 @@ const ViewStockOutOneItemPage = () => {
         textAlign: 'left'
     };
 
+    // Return JSX for rendering the ViewStockOutOneItemPage component
     return (
         <div>
+            {/* Display a heading for the ViewStockOutOneItemPage component */}
             <h1 style={{ textAlign: 'center', color: '#00008B' }}>查询出库记录 - 单个货品</h1>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                {/* Label and date picker for start date */}
                 <label style={labelStyle}>开始日期</label>
                 <DatePicker selected={startDate} onChange={date => setStartDate(date)} style={firstDatePickerStyle} />
                 <div style={{ width: '20px' }}></div>
+                {/* Label and date picker for end date */}
                 <label style={labelStyle}>结束日期</label>
                 <DatePicker selected={endDate} onChange={date => setEndDate(date)} style={datePickerStyle} />
                 <div style={{ width: '20px' }}></div>
+                {/* Label, input, dropdown, and submit button for item selection */}
                 <label style={labelStyle}>货品</label>
                 <div style={{ position: 'relative' }}>
                     <input type="text" value={inputValue} onChange={handleInputChange} placeholder="搜索货品..." />
                     <button onClick={handleArrowClick} style={buttonStyle}>▼</button>
                     {showDropdown && (
                         <div style={{ position: 'absolute', zIndex: 1, backgroundColor: 'white', border: '1px solid #ddd' }}>
+                            {/* Display suggestions based on input value */}
                             {suggestions.map(item => (
                                 <div key={item.itemId} onClick={() => handleSuggestionClick(item.itemId, item.formattedString)} style={cellStyle}>
                                     {item.formattedString}
@@ -169,12 +187,15 @@ const ViewStockOutOneItemPage = () => {
                         </div>
                     )}
                 </div>
+                {/* Submit button */}
                 <button onClick={handleSubmit} style={buttonStyle}>确认</button>
             </div>
 
+            {/* Table to display related records */}
             <table style={tableStyle}>
                 <thead>
                 <tr>
+                    {/* Table headers */}
                     <th style={headerStyle}>日期</th>
                     <th style={headerStyle}>货品ID</th>
                     <th style={headerStyle}>名称</th>
@@ -190,8 +211,10 @@ const ViewStockOutOneItemPage = () => {
                 </tr>
                 </thead>
                 <tbody>
+                {/* Render related records */}
                 {relatedRecords.map(record => (
                     <tr key={record.recordId}>
+                        {/* Display record details */}
                         <td style={cellStyle}>{record.date}</td>
                         <td style={cellStyle}>{record.itemId}</td>
                         <td style={cellStyle}>{record.itemName}</td>
@@ -203,6 +226,7 @@ const ViewStockOutOneItemPage = () => {
                         <td style={cellStyle}>${(record.sellPrice * record.stockOutAmount).toFixed(2)}</td>
                         <td style={cellStyle}>{record.currencyUnit}</td>
                         <td style={cellStyle}>{record.note}</td>
+                        {/* Edit and delete buttons */}
                         <td style={cellStyle}>
                             <button onClick={() => handleEdit(record)} style={buttonStyle}>Edit</button>
                             <button onClick={() => handleDelete(record.recordId)} style={buttonStyle}>Delete</button>
@@ -212,6 +236,7 @@ const ViewStockOutOneItemPage = () => {
                 </tbody>
             </table>
 
+            {/* Render edit popup if showEditPopup is true */}
             {showEditPopup && (
                 <EditPopUpForStockOut
                     record={currentRecord}
@@ -224,4 +249,5 @@ const ViewStockOutOneItemPage = () => {
     );
 };
 
+// Export the ViewStockOutOneItemPage component as default
 export default ViewStockOutOneItemPage;
