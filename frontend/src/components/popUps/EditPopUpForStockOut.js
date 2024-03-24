@@ -11,7 +11,6 @@ const EditPopUpForStockOut = ({ record, show, onSave, onClose }) => {
 
     // Use useEffect hook to update displayTotalPrice whenever sellPrice or stockOutAmount changes
     useEffect(() => {
-        // Update displayTotalPrice state by multiplying editedRecord's sellPrice with stockOutAmount
         setDisplayTotalPrice(editedRecord.sellPrice * editedRecord.stockOutAmount);
     }, [editedRecord.sellPrice, editedRecord.stockOutAmount]);
 
@@ -19,65 +18,104 @@ const EditPopUpForStockOut = ({ record, show, onSave, onClose }) => {
     const handleChange = (e) => {
         // Destructure name and value from the event target
         const { name, value } = e.target;
-        // Update editedRecord state with the new value, parse value to float
+        // Update editedRecord with the new value, converting value to a float
         setEditedRecord({ ...editedRecord, [name]: parseFloat(value) });
     };
 
     // If show is false, return null, else return the edit form
     if (!show) {
+        // If show is false, return null
         return null;
     }
 
-    // Return the edit form JSX
+    // If show is true, return the edit form
     return (
-        <div style={{ position: 'fixed', top: '20%', left: '30%', backgroundColor: 'white', padding: '20px', zIndex: 100 }}>
-            {/* Display a heading for the Edit Record section */}
-            <h2>Edit Record</h2>
-            {/* Form for editing the record */}
-            <form onSubmit={(e) => {
-                // Prevent default form submission behavior
-                e.preventDefault();
-                // Call onSave function with editedRecord as argument
-                onSave(editedRecord);
+        <>
+            {/* Overlay for modal */}
+            <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                zIndex: 100 // Ensure overlay is below the form but above other content
+            }}></div>
+
+            {/* Form container */}
+            <div style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                backgroundColor: '#ADD8E6', // Use the same light blue background color as in the previous component
+                padding: '20px',
+                borderRadius: '10px',
+                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
+                zIndex: 101 // Ensure form is above the overlay
             }}>
-                {/* Input field for stockOutAmount */}
-                <div>
-                    {/* Label for stockOutAmount input */}
-                    <label>数量: </label>
-                    {/* Input field for stockOutAmount */}
-                    <input
-                        type="number"
-                        name="stockOutAmount"
-                        value={editedRecord.stockOutAmount}
-                        onChange={handleChange}
-                    />
-                </div>
-                {/* Input field for sellPrice */}
-                <div>
-                    {/* Label for sellPrice input */}
-                    <label>售价: </label>
-                    {/* Input field for sellPrice */}
-                    <input
-                        type="number"
-                        step="0.01"
-                        name="sellPrice"
-                        value={editedRecord.sellPrice}
-                        onChange={handleChange}
-                    />
-                </div>
-                {/* Display field for totalPrice (not editable) */}
-                <div>
-                    {/* Label for totalPrice display */}
-                    <label>总价: </label>
-                    {/* Display totalPrice with fixed decimal precision */}
-                    <span>{displayTotalPrice.toFixed(2)}</span>
-                </div>
-                {/* Button to submit the form */}
-                <button type="submit">Save</button>
-                {/* Button to cancel the edit */}
-                <button onClick={onClose}>Cancel</button>
-            </form>
-        </div>
+                {/* Heading */}
+                <h2 style={{ color: '#00008B', textAlign: 'center' }}>修改记录</h2>
+                {/* Edit form */}
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    onSave(editedRecord);
+                }}>
+                    {/* Input for stockOutAmount */}
+                    <div>
+                        <label>数量: </label>
+                        <input
+                            type="number"
+                            name="stockOutAmount"
+                            value={editedRecord.stockOutAmount}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    {/* Input for sellPrice */}
+                    <div>
+                        <label>售价: </label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="sellPrice"
+                            value={editedRecord.sellPrice}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    {/* Display total price */}
+                    <div>
+                        <label>总价: </label>
+                        <span>{displayTotalPrice.toFixed(2)}</span>
+                    </div>
+                    {/* Buttons container to center buttons */}
+                    <div style={{
+                        textAlign: 'center', // Center align the container
+                        marginTop: '10px' // Spacing above the buttons container
+                    }}>
+                        {/* Confirm button */}
+                        <button type="submit" style={{
+                            backgroundColor: '#00008B',
+                            color: '#fff',
+                            padding: '10px 10px', // Adjust padding for visual balance
+                            borderRadius: '5px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            margin: '0 1px', // Space between buttons
+                        }}>确认</button>
+                        {/* Cancel button */}
+                        <button onClick={onClose} style={{
+                            backgroundColor: '#00008B',
+                            color: '#fff',
+                            padding: '10px 10px', // Adjust padding for visual balance
+                            borderRadius: '5px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            margin: '0 2px', // Space between buttons
+                        }}>取消</button>
+                    </div>
+                </form>
+            </div>
+        </>
     );
 };
 

@@ -117,37 +117,34 @@ const StockOutStatistics = () => {
             </div>
 
             {/* Table for displaying summarized data */}
-            <table style={tableStyle}>
-                {/* Table header */}
-                <thead>
-                <tr>
-                    {/* Header cells with titles for each column */}
-                    <th style={headerStyle}>货品名称</th>
-                    <th style={headerStyle}>规格</th>
-                    <th style={headerStyle}>单位</th>
-                    <th style={headerStyle}>类别</th>
-                    <th style={headerStyle}>品牌</th>
-                    <th style={headerStyle}>总出库量</th>
-                    <th style={headerStyle}>总价</th>
-                </tr>
-                </thead>
-                {/* Table body */}
-                <tbody>
-                {/* Mapping each item in summarizedData to a table row */}
-                {summarizedData.map((item, index) => (
-                    <tr key={index}>
-                        {/* Data cells for each property of the item */}
-                        <td style={cellStyle}>{item.itemName}</td>
-                        <td style={cellStyle}>{item.itemSize}</td>
-                        <td style={cellStyle}>{item.unit}</td>
-                        <td style={cellStyle}>{item.itemType}</td>
-                        <td style={cellStyle}>{item.brand}</td>
-                        <td style={cellStyle}>{item.sumStockOutAmount}</td>
-                        <td style={cellStyle}>${item.sumSellPrice.toFixed(2)}</td>
+            {summarizedData.length > 0 && (
+                <table style={tableStyle}>
+                    <thead>
+                    <tr>
+                        <th style={headerStyle}>货品名称</th>
+                        <th style={headerStyle}>规格</th>
+                        <th style={headerStyle}>单位</th>
+                        <th style={headerStyle}>类别</th>
+                        <th style={headerStyle}>品牌</th>
+                        <th style={headerStyle}>总出库量</th>
+                        <th style={headerStyle}>总价</th>
                     </tr>
-                ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {summarizedData.map((item, index) => (
+                        <tr key={index}>
+                            <td style={cellStyle}>{item.itemName}</td>
+                            <td style={cellStyle}>{item.itemSize}</td>
+                            <td style={cellStyle}>{item.unit}</td>
+                            <td style={cellStyle}>{item.itemType}</td>
+                            <td style={cellStyle}>{item.brand}</td>
+                            <td style={cellStyle}>{item.sumStockOutAmount}</td>
+                            <td style={cellStyle}>${item.sumSellPrice.toFixed(2)}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 };

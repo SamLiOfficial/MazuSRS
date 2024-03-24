@@ -1,13 +1,14 @@
-// Import necessary modules from React and axios library
+// Import necessary modules and components from React, axios, and external libraries
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import EditPopUpForStockOut from '/Users/samli/test/frontend/src/components/popUps/EditPopUpForStockOut.js'; // Adjust the import path as necessary
+import EditPopUpForStockOut from '/Users/samli/test/frontend/src/components/popUps/EditPopUpForStockOut.js'; // Import for EditPopUpForStockOut component
+import ConfirmationModal from '/Users/samli/test/frontend/src/components/popUps/ConfirmationModal.js'; // Import for ConfirmationModal component
 
 // Define the ViewStockOutOneItemPage functional component
 const ViewStockOutOneItemPage = () => {
-    // Initialize state variables using the useState hook
+    // Declare state variables using useState hooks
     const [startDate, setStartDate] = useState(new Date()); // State for start date
     const [endDate, setEndDate] = useState(new Date()); // State for end date
     const [items, setItems] = useState([]); // State for items
@@ -15,32 +16,34 @@ const ViewStockOutOneItemPage = () => {
     const [suggestions, setSuggestions] = useState([]); // State for suggestions
     const [selectedItemId, setSelectedItemId] = useState(''); // State for selected item ID
     const [relatedRecords, setRelatedRecords] = useState([]); // State for related records
-    const [showDropdown, setShowDropdown] = useState(false); // State to show/hide dropdown
-    const [showEditPopup, setShowEditPopup] = useState(false); // State to show/hide edit popup
+    const [showDropdown, setShowDropdown] = useState(false); // State for showing dropdown
+    const [showEditPopup, setShowEditPopup] = useState(false); // State for showing edit popup
     const [currentRecord, setCurrentRecord] = useState(null); // State for current record
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false); // State for showing confirmation modal
+    const [deleteCandidateId, setDeleteCandidateId] = useState(null); // State for tracking ID of record to delete
 
-    // useEffect hook to fetch items data from the API upon component mount
+    // Effect hook to fetch items data when component mounts
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_API_URL}/all-items`)
             .then(response => {
-                setItems(response.data.sort((a, b) => a.formattedString.localeCompare(b.formattedString)));
+                setItems(response.data.sort((a, b) => a.formattedString.localeCompare(b.formattedString))); // Set sorted items data
             })
-            .catch(error => console.error('Error fetching items:', error));
+            .catch(error => console.error('Error fetching items:', error)); // Log error if fetching items fails
     }, []);
 
-    // Function to handle input change in the search bar
+    // Function to handle input change event
     const handleInputChange = (e) => {
-        const value = e.target.value;
-        setInputValue(value);
-        updateSuggestions(value);
-        setShowDropdown(true);
+        const value = e.target.value; // Get input value
+        setInputValue(value); // Update input value state
+        updateSuggestions(value); // Call function to update suggestions based on input value
+        setShowDropdown(true); // Show dropdown
     };
 
-    // Function to handle arrow button click to toggle dropdown visibility
+    // Function to handle arrow click event
     const handleArrowClick = () => {
-        setShowDropdown(!showDropdown);
+        setShowDropdown(!showDropdown); // Toggle dropdown visibility
         if (!showDropdown) {
-            setSuggestions(items);
+            setSuggestions(items); // Set suggestions to items if dropdown is not shown
         }
     };
 
@@ -48,16 +51,15 @@ const ViewStockOutOneItemPage = () => {
     const updateSuggestions = (value) => {
         const filteredSuggestions = items.filter(item =>
             item.formattedString.toLowerCase().includes(value.toLowerCase())
-        );
-        setSuggestions(filteredSuggestions);
+        ); // Filter items based on input value
+        setSuggestions(filteredSuggestions); // Set filtered suggestions
     };
 
-    // Function to handle click on suggestion to select an item
+    // Function to handle suggestion click event
     const handleSuggestionClick = (itemId, formattedString) => {
-        setInputValue(formattedString);
-        setSelectedItemId(itemId);
-        setSuggestions([]);
-        setShowDropdown(false);
+        setInputValue(formattedString); // Update input value with selected suggestion
+        setSelectedItemId(itemId); // Set selected item ID
+        setShowDropdown(false); // Hide dropdown
     };
 
     // Function to handle form submission
@@ -65,45 +67,55 @@ const ViewStockOutOneItemPage = () => {
         if (selectedItemId && startDate && endDate) {
             axios.get(`${process.env.REACT_APP_API_URL}/stock-out-record-by-item`, {
                 params: {
-                    startDate: startDate.toISOString().split('T')[0],
-                    endDate: endDate.toISOString().split('T')[0],
-                    itemId: selectedItemId
+                    startDate: startDate.toISOString().split('T')[0], // Format start date
+                    endDate: endDate.toISOString().split('T')[0], // Format end date
+                    itemId: selectedItemId // Pass selected item ID
                 }
             })
                 .then(response => {
-                    setRelatedRecords(response.data);
+                    setRelatedRecords(response.data); // Set related records data
                 })
-                .catch(error => console.error('Error fetching related records:', error));
+                .catch(error => console.error('Error fetching related records:', error)); // Log error if fetching related records fails
         } else {
-            alert('Please select valid dates and an item.');
+            alert('Please select valid dates and an item.'); // Alert user if dates or item are not selected
         }
     };
 
-    // Function to handle edit button click
+    // Function to handle edit button click event
     const handleEdit = (record) => {
-        setCurrentRecord(record);
-        setShowEditPopup(true);
+        setCurrentRecord(record); // Set current record to edit
+        setShowEditPopup(true); // Show edit popup
     };
 
-    // Function to handle saving edited record
+    // Function to handle save edit event
     const handleSaveEdit = async (editedRecord) => {
         try {
-            await axios.put(`${process.env.REACT_APP_API_URL}/stock-out-record/${editedRecord.recordId}`, editedRecord);
-            setRelatedRecords(relatedRecords.map(record => record.recordId === editedRecord.recordId ? editedRecord : record));
-            setShowEditPopup(false);
-            setCurrentRecord(null);
+            await axios.put(`${process.env.REACT_APP_API_URL}/stock-out-record/${editedRecord.recordId}`, editedRecord); // Update record on the server
+            setRelatedRecords(relatedRecords.map(record => record.recordId === editedRecord.recordId ? editedRecord : record)); // Update related records state with edited record
+            setShowEditPopup(false); // Hide edit popup
+            setCurrentRecord(null); // Reset current record
         } catch (error) {
-            console.error('Error updating record:', error);
+            console.error('Error updating record:', error); // Log error if updating record fails
         }
     };
 
-    // Function to handle deleting a record
-    const handleDelete = async (recordId) => {
-        try {
-            await axios.delete(`${process.env.REACT_APP_API_URL}/stock-out-record/${recordId}`);
-            setRelatedRecords(relatedRecords.filter(record => record.recordId !== recordId));
-        } catch (error) {
-            console.error('Error deleting record:', error);
+    // Function to request delete operation
+    const requestDelete = (recordId) => {
+        setDeleteCandidateId(recordId); // Set record ID to delete
+        setShowConfirmationModal(true); // Show confirmation modal
+    };
+
+    // Function to handle confirmed deletion
+    const handleDelete = async () => {
+        if (deleteCandidateId) {
+            try {
+                await axios.delete(`${process.env.REACT_APP_API_URL}/stock-out-record/${deleteCandidateId}`); // Delete record on the server
+                setRelatedRecords(relatedRecords.filter(record => record.recordId !== deleteCandidateId)); // Remove deleted record from related records
+                setShowConfirmationModal(false); // Hide confirmation modal
+                setDeleteCandidateId(null); // Reset delete candidate ID
+            } catch (error) {
+                console.error('Error deleting record:', error); // Log error if deleting record fails
+            }
         }
     };
 
@@ -157,7 +169,6 @@ const ViewStockOutOneItemPage = () => {
         textAlign: 'left'
     };
 
-    // Return JSX for rendering the ViewStockOutOneItemPage component
     return (
         <div>
             {/* Display a heading for the ViewStockOutOneItemPage component */}
@@ -170,12 +181,12 @@ const ViewStockOutOneItemPage = () => {
                 {/* Label and date picker for end date */}
                 <label style={labelStyle}>结束日期</label>
                 <DatePicker selected={endDate} onChange={date => setEndDate(date)} style={datePickerStyle} />
-                <div style={{ width: '20px' }}></div>
                 {/* Label, input, dropdown, and submit button for item selection */}
+                <div style={{ width: '20px' }}></div>
                 <label style={labelStyle}>货品</label>
-                <div style={{ position: 'relative' }}>
+                <div style={{ position: 'relative', width: '200px' }}>
                     <input type="text" value={inputValue} onChange={handleInputChange} placeholder="搜索货品..." />
-                    <button onClick={handleArrowClick} style={buttonStyle}>▼</button>
+                    <button onClick={handleArrowClick}>▼</button>
                     {showDropdown && (
                         <div style={{ position: 'absolute', zIndex: 1, backgroundColor: 'white', border: '1px solid #ddd' }}>
                             {/* Display suggestions based on input value */}
@@ -187,56 +198,53 @@ const ViewStockOutOneItemPage = () => {
                         </div>
                     )}
                 </div>
-                {/* Submit button */}
                 <button onClick={handleSubmit} style={buttonStyle}>确认</button>
             </div>
 
             {/* Table to display related records */}
-            <table style={tableStyle}>
-                <thead>
-                <tr>
-                    {/* Table headers */}
-                    <th style={headerStyle}>日期</th>
-                    <th style={headerStyle}>货品ID</th>
-                    <th style={headerStyle}>名称</th>
-                    <th style={headerStyle}>品牌</th>
-                    <th style={headerStyle}>规格</th>
-                    <th style={headerStyle}>单位</th>
-                    <th style={headerStyle}>出货数量</th>
-                    <th style={headerStyle}>售价</th>
-                    <th style={headerStyle}>总价</th>
-                    <th style={headerStyle}>货币</th>
-                    <th style={headerStyle}>备注</th>
-                    <th style={headerStyle}>操作</th> {/* Added column for actions */}
-                </tr>
-                </thead>
-                <tbody>
-                {/* Render related records */}
-                {relatedRecords.map(record => (
-                    <tr key={record.recordId}>
-                        {/* Display record details */}
-                        <td style={cellStyle}>{record.date}</td>
-                        <td style={cellStyle}>{record.itemId}</td>
-                        <td style={cellStyle}>{record.itemName}</td>
-                        <td style={cellStyle}>{record.brand}</td>
-                        <td style={cellStyle}>{record.itemSize}</td>
-                        <td style={cellStyle}>{record.unit}</td>
-                        <td style={cellStyle}>{record.stockOutAmount}</td>
-                        <td style={cellStyle}>${record.sellPrice.toFixed(2)}</td>
-                        <td style={cellStyle}>${(record.sellPrice * record.stockOutAmount).toFixed(2)}</td>
-                        <td style={cellStyle}>{record.currencyUnit}</td>
-                        <td style={cellStyle}>{record.note}</td>
-                        {/* Edit and delete buttons */}
-                        <td style={cellStyle}>
-                            <button onClick={() => handleEdit(record)} style={buttonStyle}>Edit</button>
-                            <button onClick={() => handleDelete(record.recordId)} style={buttonStyle}>Delete</button>
-                        </td>
+            {relatedRecords.length > 0 && (
+                <table style={tableStyle}>
+                    <thead>
+                    <tr>
+                        <th style={headerStyle}>日期</th> {/* Display a table header for the date */}
+                        <th style={headerStyle}>货品ID</th> {/* Display a table header for the product ID */}
+                        <th style={headerStyle}>名称</th> {/* Display a table header for the name */}
+                        <th style={headerStyle}>品牌</th> {/* Display a table header for the brand */}
+                        <th style={headerStyle}>规格</th> {/* Display a table header for the specifications */}
+                        <th style={headerStyle}>单位</th> {/* Display a table header for the unit */}
+                        <th style={headerStyle}>出货数量</th> {/* Display a table header for the quantity sold */}
+                        <th style={headerStyle}>售价</th> {/* Display a table header for the selling price */}
+                        <th style={headerStyle}>总价</th> {/* Display a table header for the total price */}
+                        <th style={headerStyle}>货币</th> {/* Display a table header for the currency */}
+                        <th style={headerStyle}>备注</th> {/* Display a table header for the notes */}
+                        <th style={headerStyle}>操作</th> {/* Display a table header for the actions */}
                     </tr>
-                ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {relatedRecords.map(record => (
+                        <tr key={record.recordId}>
+                            <td style={cellStyle}>{record.date}</td> {/* Display the date of the inventory record */}
+                            <td style={cellStyle}>{record.itemId}</td> {/* Display the item ID of the inventory record */}
+                            <td style={cellStyle}>{record.itemName}</td> {/* Display the item name of the inventory record */}
+                            <td style={cellStyle}>{record.brand}</td> {/* Display the brand of the inventory record */}
+                            <td style={cellStyle}>{record.itemSize}</td> {/* Display the size of the item in the inventory record */}
+                            <td style={cellStyle}>{record.unit}</td> {/* Display the unit of measurement for the item */}
+                            <td style={cellStyle}>{record.stockOutAmount}</td> {/* Display the amount of stock sold */}
+                            <td style={cellStyle}>${record.sellPrice.toFixed(2)}</td> {/* Display the selling price of the item with 2 decimal places */}
+                            <td style={cellStyle}>${(record.sellPrice * record.stockOutAmount).toFixed(2)}</td> {/* Calculate and display the total price of the sold items with 2 decimal places */}
+                            <td style={cellStyle}>{record.currencyUnit}</td> {/* Display the currency unit used */}
+                            <td style={cellStyle}>{record.note}</td> {/* Display any notes associated with the inventory record */}
+                            <td style={cellStyle}>
+                                <button onClick={() => handleEdit(record)} style={buttonStyle}>修改</button>
+                                <button onClick={() => requestDelete(record.recordId)} style={buttonStyle}>删除</button>
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            )}
 
-            {/* Render edit popup if showEditPopup is true */}
+            {/* Display edit popup if showEditPopup state is true */}
             {showEditPopup && (
                 <EditPopUpForStockOut
                     record={currentRecord}
@@ -245,8 +253,17 @@ const ViewStockOutOneItemPage = () => {
                     onClose={() => setShowEditPopup(false)}
                 />
             )}
+            {/* Display confirmation modal if showConfirmationModal state is true */}
+            {showConfirmationModal && (
+                <ConfirmationModal
+                    message="确定要删除这条记录吗？"
+                    onConfirm={handleDelete}
+                    onClose={() => setShowConfirmationModal(false)}
+                />
+            )}
         </div>
     );
+
 };
 
 // Export the ViewStockOutOneItemPage component as default

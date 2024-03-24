@@ -65,7 +65,7 @@ const SearchTableIn = ({ items }) => { // Define a functional component named 'S
             {/* Title for the page */}
             <div style={titleStyle}>搜索结果</div> {/* Centered title */}
             {items.length === 0 ? ( // Conditional rendering: If no items, display a message
-                <p>No results found</p>
+                <p>无记录</p>
             ) : (
                 <table style={tableStyle}> {/* Render a table with the table style */}
                     <thead> {/* Table header */}

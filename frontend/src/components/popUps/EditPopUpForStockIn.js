@@ -1,89 +1,119 @@
-// Import necessary modules from React
+// Importing React library and necessary hooks for using React components and state management
 import React, { useState, useEffect } from 'react';
 
-// Define a functional component called EditPopUpForStockIn, which takes props: record, show, onSave, onClose
+// Functional component for an edit popup form for stock in records
 const EditPopUpForStockIn = ({ record, show, onSave, onClose }) => {
-    // Initialize state variable editedRecord using useState hook, set it to the value of prop record
+    // State hook to manage the edited record
     const [editedRecord, setEditedRecord] = useState({ ...record });
 
-    // Use useEffect hook to recalculate totalPrice whenever stockInAmount or unitPrice changes
+    // Effect hook to recalculate total price when stock in amount or unit price changes
     useEffect(() => {
-        // Update editedRecord state using setEditedRecord function and a callback
         setEditedRecord(current => {
-            // Calculate recalculatedTotalPrice by multiplying stockInAmount with unitPrice
+            // Calculating total price by multiplying stock in amount and unit price
             const recalculatedTotalPrice = current.stockInAmount * current.unitPrice;
-            // Return a new object with updated totalPrice along with other properties
             return { ...current, totalPrice: recalculatedTotalPrice };
         });
     }, [editedRecord.stockInAmount, editedRecord.unitPrice]);
 
-    // Define handleChange function to handle input change events
+    // Function to handle changes in input fields
     const handleChange = (e) => {
-        // Destructure name and value from the event target
         const { name, value } = e.target;
-        // Parse value to float if name is 'unitPrice', else keep it as it is
+        // Parsing value to float for unit price field
         const updatedValue = name === 'unitPrice' ? parseFloat(value) : value;
-        // Update editedRecord state with the new value
+        // Updating edited record state with changed value
         setEditedRecord({ ...editedRecord, [name]: updatedValue });
     };
 
-    // If show is false, return null, else return the edit form
+    // Rendering null if show prop is false
     if (!show) {
         return null;
     }
 
-    // Return the edit form JSX
+    // Rendering the edit popup form
     return (
-        <div style={{ position: 'fixed', top: '20%', left: '30%', backgroundColor: 'white', padding: '20px', zIndex: 100 }}>
-            {/* Display a heading for the Edit Record section */}
-            <h2>Edit Record</h2>
-            {/* Form for editing the record */}
-            <form onSubmit={(e) => {
-                // Prevent default form submission behavior
-                e.preventDefault();
-                // Call onSave function with editedRecord as argument
-                onSave(editedRecord);
+        <>
+            {/* Overlay for the popup */}
+            <div style={{
+                position: 'fixed', // Fixing the position of the overlay
+                top: 0, left: 0, right: 0, bottom: 0, // Positioning the overlay to cover the entire screen
+                backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
+                zIndex: 100 // Setting the stacking order to make sure it's on top of other elements
+            }}></div>
+
+            {/* Popup content */}
+            <div style={{
+                position: 'fixed', // Fixing the position of the popup content
+                top: '50%', left: '50%', // Positioning the popup content at the center horizontally and vertically
+                transform: 'translate(-50%, -50%)', // Adjusting position to center the popup content
+                backgroundColor: '#ADD8E6', // Light blue background color
+                padding: '20px', // Adding padding to the popup content
+                borderRadius: '10px', // Adding rounded corners to the popup content
+                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)', // Adding shadow to the popup content
+                zIndex: 101 // Setting the stacking order to make sure it's on top of the overlay
             }}>
-                {/* Input field for stockInAmount */}
-                <div>
-                    {/* Label for stockInAmount input */}
-                    <label>数量: </label>
-                    {/* Input field for stockInAmount */}
-                    <input
-                        type="number"
-                        name="stockInAmount"
-                        value={editedRecord.stockInAmount}
-                        onChange={handleChange}
-                    />
-                </div>
-                {/* Input field for unitPrice */}
-                <div>
-                    {/* Label for unitPrice input */}
-                    <label>单价: </label>
-                    {/* Input field for unitPrice */}
-                    <input
-                        type="number"
-                        step="0.01"
-                        name="unitPrice"
-                        value={editedRecord.unitPrice}
-                        onChange={handleChange}
-                    />
-                </div>
-                {/* Display field for totalPrice (not editable) */}
-                <div>
-                    {/* Label for totalPrice display */}
-                    <label>总价: </label>
-                    {/* Display totalPrice with fixed decimal precision */}
-                    <span>{editedRecord.totalPrice.toFixed(2)}</span>
-                </div>
-                {/* Button to submit the form */}
-                <button type="submit">Save</button>
-                {/* Button to cancel the edit */}
-                <button onClick={onClose}>Cancel</button>
-            </form>
-        </div>
+                {/* Heading for the popup */}
+                <h2 style={{ color: '#00008B', textAlign: 'center' }}>修改记录</h2>
+                {/* Form for editing stock in record */}
+                <form onSubmit={(e) => {
+                    e.preventDefault(); // Preventing default form submission behavior
+                    onSave(editedRecord); // Calling onSave function with edited record
+                }}>
+                    {/* Input field for stock in amount */}
+                    <div>
+                        <label>数量: </label>
+                        <input
+                            type="number" // Setting input type to number
+                            name="stockInAmount" // Setting input name to stockInAmount
+                            value={editedRecord.stockInAmount} // Setting input value to edited stock in amount
+                            onChange={handleChange} // Setting onChange handler to handleChange function
+                        />
+                    </div>
+                    {/* Input field for unit price */}
+                    <div>
+                        <label>单价: </label>
+                        <input
+                            type="number" // Setting input type to number
+                            step="0.01" // Setting step to allow decimal values
+                            name="unitPrice" // Setting input name to unitPrice
+                            value={editedRecord.unitPrice} // Setting input value to edited unit price
+                            onChange={handleChange} // Setting onChange handler to handleChange function
+                        />
+                    </div>
+                    {/* Displaying total price */}
+                    <div>
+                        <label>总价: </label>
+                        <span>{editedRecord.totalPrice.toFixed(2)}</span>
+                    </div>
+                    {/* Buttons container to center buttons */}
+                    <div style={{
+                        textAlign: 'center', // Center align the container
+                        marginTop: '10px' // Spacing above the buttons container
+                    }}>
+                        {/* Submit button */}
+                        <button type="submit" style={{
+                            backgroundColor: '#00008B', // Setting background color to dark blue
+                            color: '#fff', // Setting text color to white
+                            padding: '10px', // Adding padding to the button
+                            borderRadius: '5px', // Adding rounded corners to the button
+                            border: 'none', // Removing border
+                            cursor: 'pointer', // Changing cursor to pointer on hover
+                            marginRight: '3px' // Spacing between buttons
+                        }}>确认</button>
+                        {/* Cancel button */}
+                        <button onClick={onClose} style={{
+                            backgroundColor: '#00008B', // Setting background color to dark blue
+                            color: '#fff', // Setting text color to white
+                            padding: '10px', // Adding padding to the button
+                            borderRadius: '5px', // Adding rounded corners to the button
+                            border: 'none', // Removing border
+                            cursor: 'pointer' // Changing cursor to pointer on hover
+                        }}>取消</button>
+                    </div>
+                </form>
+            </div>
+        </>
     );
 };
 
-// Export the EditPopUpForStockIn component as default
+// Exporting the EditPopUpForStockIn component as default
 export default EditPopUpForStockIn;

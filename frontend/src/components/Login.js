@@ -90,13 +90,13 @@ const Login = () => {
             {/* Display login image */}
             <img src={loginImage} style={imageStyle} alt="Login" />
             {/* Display login title */}
-            <div style={titleStyle}>Login</div>
+            <div style={titleStyle}>用户登录</div>
             {/* Login form */}
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {/* Input field for username */}
                 <input
                     type="text"
-                    placeholder="Username"
+                    placeholder="用户名"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     style={inputStyle}
@@ -104,13 +104,13 @@ const Login = () => {
                 {/* Input field for password */}
                 <input
                     type="password"
-                    placeholder="Password"
+                    placeholder="密码"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     style={inputStyle}
                 />
                 {/* Button to submit the form */}
-                <button type="submit" style={buttonStyle}>Login</button>
+                <button type="submit" style={buttonStyle}>确认</button>
             </form>
         </div>
     );
