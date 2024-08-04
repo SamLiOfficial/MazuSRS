@@ -32,7 +32,8 @@ const Login = () => {
             // Log error message if authentication fails
             console.error('Authentication failed:', error);
             // Alert the user if login fails
-            alert('There is a error: Invalid credentials' + error);
+            alert(`There is an error: Invalid credentials ${error.message} ${baseURL}`);
+
         }
     };
 
